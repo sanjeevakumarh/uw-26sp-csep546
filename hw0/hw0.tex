@@ -201,6 +201,104 @@
         \item \textbf{Part d:} $\E{\sqrt{n}(\widehat{\mu}_n - \mu)}$, $\Var{\sqrt{n}(\widehat{\mu}_n - \mu)}$
         \item \textbf{Parts a-d} Corresponding calculations
     \end{itemize}
+
+    \subsubsection*{Solution:}
+
+    \begin{mdframed}
+    \textbf{\large Part a:} Find $a, b \in \mathbb{R}$ such that $aX_1 + b \sim \mathcal{N}(0,1)$
+    \end{mdframed}
+
+    \textbf{Known:}
+    \begin{itemize}
+        \item $X_1, X_2, \ldots, X_n \sim \mathcal{N}(\mu, \sigma^2)$ i.i.d.
+        \item $\mathcal{N}(0, 1) \Rightarrow \mu = 0,\; \sigma^2 = 1$
+        \item $X_1 \sim \mathcal{N}(\mu, \sigma^2)$
+    \end{itemize}
+
+    \medskip
+    \textbf{Step 1:} Map mean and variance to the new equation.
+
+    If $X_n \sim \mathcal{N}(\mu, \sigma^2)$, then $aX_n + b \sim \mathcal{N}(a\mu + b,\; a^2\sigma^2)$.
+
+    \begin{itemize}
+        \item Mean: $a\mu + b = 0$
+        \item Variance: $a^2\sigma^2 = 1 \;\Rightarrow\; a^2 = \frac{1}{\sigma^2}$, so $a = \frac{1}{\sigma}$
+        \item Replacing $a$ in the mean equation: $\frac{\mu}{\sigma} + b = 0$, so $b = -\frac{\mu}{\sigma}$
+    \end{itemize}
+
+    \medskip
+    \textbf{Final Answer:} $\boxed{a = \dfrac{1}{\sigma}, \quad b = -\dfrac{\mu}{\sigma}}$
+
+    \bigskip
+    \begin{mdframed}
+    \textbf{\large Part b:} Compute $\E{|aX_1+b|}$ \hfill \textit{(need to revise concepts to solve part c, skipping it.)}
+    \end{mdframed}
+
+    \bigskip
+    \begin{mdframed}
+    \textbf{\large Part c:} Compute $\E{X_1 + 2X_2}$ and $\Var{X_1 + 2X_2}$
+    \end{mdframed}
+
+    \textbf{Known:}
+    \begin{itemize}
+        \item $X_1, X_2$ are i.i.d.\ $\sim \mathcal{N}(\mu, \sigma^2)$
+        \item Additivity of variance: for two independent random variables $X$ and $Y$, $\Var{X + Y} = \Var{X} + \Var{Y}$
+        \item Scaling rule: $\Var{aX} = a^2\sigma^2$
+        \item Linearity of expectation: the expectation of a sum is the sum of individual expectations
+    \end{itemize}
+
+    \medskip
+    Using linearity of expectation:
+    \[
+        \E{X_1 + 2X_2} = \E{X_1} + 2\,\E{X_2} = \mu + 2\mu = 3\mu
+    \]
+
+    Using additivity of variance:
+    \[
+        \Var{X_1 + 2X_2} = \Var{X_1} + \Var{2X_2} = \sigma^2 + 4\sigma^2 = 5\sigma^2
+    \]
+
+    \medskip
+    \textbf{Final Answer:} $\boxed{\E{X_1 + 2X_2} = 3\mu, \quad \Var{X_1 + 2X_2} = 5\sigma^2}$
+
+    \bigskip
+    \begin{mdframed}
+    \textbf{\large Part d:} Mean and variance of $\sqrt{n}(\widehat{\mu}_n - \mu)$
+    \end{mdframed}
+
+    \textbf{Known:} $\widehat{\mu}_n = \frac{1}{n} \sum_{i=1}^{n} X_i$
+
+    \medskip
+    \textbf{Step 1:} Expected value of $\widehat{\mu}_n$.
+    \begin{align*}
+        \E{\widehat{\mu}_n} &= \E{\frac{1}{n} \sum_{i=1}^n X_i} \\
+        &= \frac{1}{n} \E{\sum_{i=1}^n X_i} \\
+        &= \frac{1}{n} \cdot n\mu = \mu
+    \end{align*}
+
+    \textbf{Step 2:} Variance of $\widehat{\mu}_n$ (using additivity of variance and $\Var{aX} = a^2\Var{X}$).
+    \begin{align*}
+        \Var{\widehat{\mu}_n} &= \Var{\frac{1}{n} \sum_{i=1}^n X_i} \\
+        &= \frac{1}{n^2} \Var{\sum_{i=1}^n X_i} \\
+        &= \frac{1}{n^2} \cdot n\sigma^2 = \frac{\sigma^2}{n}
+    \end{align*}
+
+    \textbf{Step 3:} Compute $\E{\sqrt{n}(\widehat{\mu}_n - \mu)}$.
+    \[
+        = \sqrt{n} \cdot (\E{\widehat{\mu}_n} - \mu) = \sqrt{n} \cdot (\mu - \mu) = 0
+    \]
+
+    \textbf{Step 4:} Compute $\Var{\sqrt{n}(\widehat{\mu}_n - \mu)}$.
+    \[
+        = (\sqrt{n})^2 \cdot \Var{\widehat{\mu}_n - \mu} = n \cdot \Var{\widehat{\mu}_n} = n \cdot \frac{\sigma^2}{n} = \sigma^2
+    \]
+
+    \medskip
+    \textbf{Final Answer:} $\boxed{\E{\sqrt{n}(\widehat{\mu}_n - \mu)} = 0, \quad \Var{\sqrt{n}(\widehat{\mu}_n - \mu)} = \sigma^2}$
+
+    \medskip
+    \textbf{Collaboration:} \texttt{hw0/conversation\_export\_A3.md} in Appendix section.
+
 \end{aprob}
 
 \noindent\rule{\textwidth}{0.4pt}
@@ -232,6 +330,152 @@
     \begin{itemize}
         \item \textbf{Parts a-d:} Solution and corresponding calculations
     \end{itemize}
+
+    \subsubsection*{Solution:}
+
+    \begin{mdframed}
+    \textbf{\large Part a:} Compute $\mathbf{AB}$
+    \end{mdframed}
+
+    $\mathbf{AB}$ is a $3 \times 3$ matrix. Computing each entry via dot products:
+
+    \textbf{Row 1:}
+    \begin{align*}
+        (AB)_{1,1} &= (0)(-1) + (1)(-2) + (-1)(2) + (-2)(-1) = -2 \\
+        (AB)_{1,2} &= (0)(2) + (1)(1) + (-1)(0) + (-2)(-1) = 3 \\
+        (AB)_{1,3} &= (0)(0) + (1)(2) + (-1)(-3) + (-2)(2) = 1
+    \end{align*}
+
+    \textbf{Row 2:}
+    \begin{align*}
+        (AB)_{2,1} &= (1)(-1) + (1)(-2) + (1)(2) + (1)(-1) = -2 \\
+        (AB)_{2,2} &= (1)(2) + (1)(1) + (1)(0) + (1)(-1) = 2 \\
+        (AB)_{2,3} &= (1)(0) + (1)(2) + (1)(-3) + (1)(2) = 1
+    \end{align*}
+
+    \textbf{Row 3:}
+    \begin{align*}
+        (AB)_{3,1} &= (1)(-1) + (-1)(-2) + (1)(2) + (2)(-1) = 1 \\
+        (AB)_{3,2} &= (1)(2) + (-1)(1) + (1)(0) + (2)(-1) = -1 \\
+        (AB)_{3,3} &= (1)(0) + (-1)(2) + (1)(-3) + (2)(2) = -1
+    \end{align*}
+
+    \textbf{Final Result:}
+    \[
+        \boxed{\mathbf{AB} = \begin{bmatrix} -2 & 3 & 1 \\ -2 & 2 & 1 \\ 1 & -1 & -1 \end{bmatrix}}
+    \]
+
+    \bigskip
+    \begin{mdframed}
+    \textbf{\large Part b:} Rank of $\mathbf{AB}$, $\mathbf{A}$, and $\mathbf{B}$
+    \end{mdframed}
+
+    \textbf{Step 1:} Row reduce $\mathbf{AB}$ to find its rank.
+
+    Start:
+    $\begin{bmatrix} -2 & 3 & 1 \\ -2 & 2 & 1 \\ 1 & -1 & -1 \end{bmatrix}$
+
+    Swap $R_1 \leftrightarrow R_3$:
+    $\begin{bmatrix} 1 & -1 & -1 \\ -2 & 2 & 1 \\ -2 & 3 & 1 \end{bmatrix}$
+
+    $R_2 \to R_2 + 2R_1$:
+    $\begin{bmatrix} 1 & -1 & -1 \\ 0 & 0 & -1 \\ -2 & 3 & 1 \end{bmatrix}$
+
+    $R_3 \to R_3 + 2R_1$:
+    $\begin{bmatrix} 1 & -1 & -1 \\ 0 & 0 & -1 \\ 0 & 1 & -1 \end{bmatrix}$
+
+    Swap $R_2 \leftrightarrow R_3$:
+    $\begin{bmatrix} 1 & -1 & -1 \\ 0 & 1 & -1 \\ 0 & 0 & -1 \end{bmatrix}$
+
+    Three non-zero rows $\Rightarrow$ $\text{rank}(\mathbf{AB}) = 3$ (full rank, $\mathbf{AB}$ is invertible).
+
+    \medskip
+    \textbf{Step 2:} Determine $\text{rank}(\mathbf{A})$ and $\text{rank}(\mathbf{B})$.
+    \begin{itemize}
+        \item Key constraint: $\text{rank}(\mathbf{AB}) \leq \min(\text{rank}(\mathbf{A}),\; \text{rank}(\mathbf{B}))$
+        \item We know $\text{rank}(\mathbf{AB}) = 3$, so $\text{rank}(\mathbf{A}) \geq 3$ and $\text{rank}(\mathbf{B}) \geq 3$
+        \item But $\mathbf{A}$ is $3 \times 4$, so $\text{rank}(\mathbf{A}) \leq \min(3,4) = 3$
+        \item And $\mathbf{B}$ is $4 \times 3$, so $\text{rank}(\mathbf{B}) \leq \min(4,3) = 3$
+    \end{itemize}
+
+    \textbf{Final Result:} $\boxed{\text{rank}(\mathbf{AB}) = 3, \quad \text{rank}(\mathbf{A}) = 3, \quad \text{rank}(\mathbf{B}) = 3}$
+
+    \bigskip
+    \begin{mdframed}
+    \textbf{\large Part c:} Find $\mathbf{C}$ such that $\mathbf{ABC} = \mathbf{I}$
+    \end{mdframed}
+
+    \textbf{Known:} $\mathbf{AB}$ is $3 \times 3$ with rank 3, so it's invertible.
+
+    Therefore $\mathbf{C} = (\mathbf{AB})^{-1}$ exists, and $\mathbf{ABC} = (\mathbf{AB})(\mathbf{AB})^{-1} = \mathbf{I}$.
+
+    \medskip
+    \textbf{Compute} $(\mathbf{AB})^{-1}$ via Gauss-Jordan row elimination on $[\mathbf{AB} \mid \mathbf{I}]$:
+
+    Strategy: zero out below diagonal (forward), then above (backward), then scale pivots to 1.
+
+    \medskip
+    Start:
+    $\left[\begin{array}{ccc|ccc} -2 & 3 & 1 & 1 & 0 & 0 \\ -2 & 2 & 1 & 0 & 1 & 0 \\ 1 & -1 & -1 & 0 & 0 & 1 \end{array}\right]$
+
+    \medskip
+    Step 1 --- $R_3 \to R_3 + \frac{1}{2}R_1$:
+    $\left[\begin{array}{ccc|ccc} -2 & 3 & 1 & 1 & 0 & 0 \\ -2 & 2 & 1 & 0 & 1 & 0 \\ 0 & \frac{1}{2} & -\frac{1}{2} & \frac{1}{2} & 0 & 1 \end{array}\right]$
+
+    \medskip
+    Step 2 --- $R_2 \to R_2 - R_1$:
+    $\left[\begin{array}{ccc|ccc} -2 & 3 & 1 & 1 & 0 & 0 \\ 0 & -1 & 0 & -1 & 1 & 0 \\ 0 & \frac{1}{2} & -\frac{1}{2} & \frac{1}{2} & 0 & 1 \end{array}\right]$
+
+    \medskip
+    Step 3 --- $R_3 \to R_3 + \frac{1}{2}R_2$:
+    $\left[\begin{array}{ccc|ccc} -2 & 3 & 1 & 1 & 0 & 0 \\ 0 & -1 & 0 & -1 & 1 & 0 \\ 0 & 0 & -\frac{1}{2} & 0 & \frac{1}{2} & 1 \end{array}\right]$
+
+    \medskip
+    Step 4 --- $(2,3)$ already zero, nothing to do.
+
+    \medskip
+    Step 5 --- $R_1 \to R_1 + 2R_3$:
+    $\left[\begin{array}{ccc|ccc} -2 & 3 & 0 & 1 & 1 & 2 \\ 0 & -1 & 0 & -1 & 1 & 0 \\ 0 & 0 & -\frac{1}{2} & 0 & \frac{1}{2} & 1 \end{array}\right]$
+
+    \medskip
+    Step 6 --- $R_1 \to R_1 + 3R_2$:
+    $\left[\begin{array}{ccc|ccc} -2 & 0 & 0 & -2 & 4 & 2 \\ 0 & -1 & 0 & -1 & 1 & 0 \\ 0 & 0 & -\frac{1}{2} & 0 & \frac{1}{2} & 1 \end{array}\right]$
+
+    \medskip
+    Step 7 --- Scale pivots to 1: $R_1 \div (-2)$, $R_2 \div (-1)$, $R_3 \div (-\frac{1}{2})$:
+    $\left[\begin{array}{ccc|ccc} 1 & 0 & 0 & 1 & -2 & -1 \\ 0 & 1 & 0 & 1 & -1 & 0 \\ 0 & 0 & 1 & 0 & -1 & -2 \end{array}\right]$
+
+    \medskip
+    \textbf{Final Result:}
+    \[
+        \boxed{\mathbf{C} = (\mathbf{AB})^{-1} = \begin{bmatrix} 1 & -2 & -1 \\ 1 & -1 & 0 \\ 0 & -1 & -2 \end{bmatrix}}
+    \]
+
+    \bigskip
+    \begin{mdframed}
+    \textbf{\large Part d:} Solve $\mathbf{AB}\,x = b$ where $b = [1,\;1,\;1]^\top$
+    \end{mdframed}
+
+    \textbf{Known:} $\mathbf{AB}\,x = b$ and $\mathbf{AB}$ is invertible, therefore $x = (\mathbf{AB})^{-1} b$.
+
+    \medskip
+    Using $\mathbf{C} = (\mathbf{AB})^{-1}$ from Part c, write out the matrix-vector multiplication:
+    \[
+        x = (\mathbf{AB})^{-1} b = \begin{bmatrix} 1 & -2 & -1 \\ 1 & -1 & 0 \\ 0 & -1 & -2 \end{bmatrix} \begin{bmatrix} 1 \\ 1 \\ 1 \end{bmatrix}
+    \]
+
+    Compute each row dotted with $b$:
+    \begin{align*}
+        x_1 &= (1)(1) + (-2)(1) + (-1)(1) = 1 - 2 - 1 = -2 \\
+        x_2 &= (1)(1) + (-1)(1) + (0)(1) = 1 - 1 + 0 = 0 \\
+        x_3 &= (0)(1) + (-1)(1) + (-2)(1) = 0 - 1 - 2 = -3
+    \end{align*}
+
+    \textbf{Final Result:}
+    \[
+        \boxed{x = \begin{bmatrix} -2 \\ 0 \\ -3 \end{bmatrix}}
+    \]
+
 \end{aprob}
 
 \noindent\rule{\textwidth}{0.4pt}
@@ -481,6 +725,64 @@ If you imagine each day as a point in 3D space (packages, fuel, overtime), then 
 \end{itemize}
 
 So the covariance matrix tells you both \textbf{how wide} the data is in each direction and \textbf{how tilted} the data is because variables move together.
+
+\bigskip
+\textbf{User:} \\
+Export this conversation as an MD file.
+\end{mdframed}
+
+\subsection*{A3 --- Normal Distribution Properties (conversation\_export\_A3.md)}
+
+\begin{mdframed}
+\textbf{User:} \\
+Can you provide pointers on concepts I should brush up on to solve these 4 problems? Including math basics.
+
+Don't solve the problem give me pointers/links/youtube videos or freely available courses I should review.
+
+\bigskip
+\textbf{Assistant:} \\
+Yes. For these four, I'd brush up in this order.
+
+\textbf{1) Math basics first}
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Sigma notation / summations}: you need to be comfortable reading expressions like $\frac{1}{n}\sum_{i=1}^n X_i$. Khan's summation review is a good quick refresher.
+    \item \textbf{u-substitution for integrals}: part \textbf{b} explicitly hints at this, so make sure you can spot a substitution and change variables cleanly in definite or improper integrals. Khan and Paul's Online Notes are both solid.
+\end{itemize}
+
+\textbf{2) Core probability/statistics ideas}
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Normal distribution basics}: mean $\mu$, variance $\sigma^2$, standardization, and what $\mathcal{N}(0,1)$ means. Khan's normal-distribution review/video or StatQuest are good for intuition.
+    \item \textbf{Expectation and variance rules}: especially $\E{aX+b}$, $\Var{aX+b}$, $\E{X+Y}$, $\Var{X+Y}$, and when independence matters.
+\end{itemize}
+
+\textbf{3) What each part is really testing}
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Part a}: linear transformation / standardization of a normal random variable. Review scaling and shifting of random variables.
+    \item \textbf{Part b}: expected absolute value after standardization. That means normal pdf, symmetry, absolute value inside an expectation, and integration with substitution.
+    \item \textbf{Part c}: linearity of expectation and variance of a linear combination of independent variables.
+    \item \textbf{Part d}: sample mean / sampling distribution. You want to know the mean and variance of $\widehat{\mu}_n = \frac{1}{n}\sum X_i$, and then what multiplying by $\sqrt{n}$ does to mean and variance.
+\end{itemize}
+
+\textbf{4) Free resources}
+\begin{itemize}[leftmargin=*]
+    \item Khan Academy: statistics \& probability overview, then random variables, transformations, combining random variables, and sampling distributions.
+    \item MIT OCW probability/statistics notes on expectation, variance, continuous random variables, and sums of independent normals.
+    \item OpenStax \textit{Introductory Statistics 2e} for normal distributions and sampling distributions.
+    \item StatQuest for normal distribution intuition.
+\end{itemize}
+
+\textbf{5) Tight study checklist}
+
+Before attempting the problem set, make sure you can do these without notes:
+\begin{itemize}[leftmargin=*]
+    \item Read and manipulate sigma notation.
+    \item Explain what happens to mean and variance under $Y = aX + b$.
+    \item State when $\Var{X+Y} = \Var{X} + \Var{Y}$ is valid.
+    \item Explain what the sample mean's distribution looks like when the $X_i$ are normal.
+    \item Do a basic u-substitution cleanly.
+\end{itemize}
+
+If you want, I can turn this into a 30-minute targeted review plan in the exact order to study before you try the problems.
 
 \bigskip
 \textbf{User:} \\
