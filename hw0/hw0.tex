@@ -18,32 +18,6 @@
 \date{{}}
 \maketitle
 
-\noindent Please review all homework guidance posted on the website before submitting to Gradescope. Reminders:
-\begin{itemize}
-    \item All code must be written in Python, and all written work must be typeset (e.g. \LaTeX{}).
-    \item Make sure to read the ``What to Submit'' section following each question and include all items.
-    \item Please provide succinct answers and supporting reasoning for each question. Similarly, when discussing experimental results, concisely create tables and/or figures when appropriate to organize the experimental results. All explanations, tables, and figures for any particular part of a question must be grouped together.
-    \item For every problem involving generating plots, please include the plots as part of your PDF submission.
-    \item When submitting to Gradescope, please link each question from the homework in Gradescope to the location of its answer in your homework PDF. Failure to do so may result in deductions of up to 10\% of the value of each question not properly linked. For instructions, see \url{https://www.gradescope.com/get_started#student-submission}.
-    \item \color{red}{\textbf{If you used AI tools on any part of this assignment, you must turn in a complete transcript of all conversations with AI systems as part of your submission. Failure to do so is a violation of the collaboration policy.}}
-    \item \color{red}{Make sure to submit your code by running \texttt{inv submit} from within the \texttt{csep546} uv environment and submitting the zip folder created. Submissions that don't follow this procedure will fail the autograder on Gradescope. After the due date, we will not accept resubmissions. \textbf{We suggest you wait for the autograder on Gradescope to complete and display your score before regarding the coding portion of assignments complete.}}
-\end{itemize}
-
-Not adhering to these reminders may result in point deductions. \\
-
-\textbf{Important:} By turning in this assignment (and all that follow), you acknowledge that you have read and understood the collaboration policy with humans and AI assistants alike: \url{https://courses.cs.washington.edu/courses/csep546/26sp/assignments/}. Any questions about the policy should be raised at least 24 hours before the assignment is due. There are no warnings or second chances. If we suspect you have violated the collaboration policy, we will report it to the college of engineering who will complete an investigation.
-
-
-
-
-% Start of Problems:
-
-\section*{Quick note about macro.tex}
-The \texttt{macro.tex} file provided on the course website provides the definitions for different macros that are referenced in the CSEP 546 homework \LaTeX{} files. For example, it includes the new command that makes the point values for problems pink and italicized on the homework documents, and also includes commands for things like set notation and writing matrices.\\
-
-While not required to use the provided homework \LaTeX{} files, if you would like to compile them, place the homework file in a directory and change the path to the macro file on line 3 (e.g. if the macro file is in the same directory as the homework file, the path should be \verb_\subimport*{./}{macro}_). You can also choose to directly copy the contents of the macro file into your \LaTeX{} code.
-\clearpage{}
-
 \section*{Probability and Statistics}
 \begin{aprob}
     \points{2} (From Murphy Exercise 2.4.) 
@@ -57,7 +31,58 @@ While not required to use the provided homework \LaTeX{} files, if you would lik
         \item Final Answer
         \item Corresponding Calculations
     \end{itemize}
+
+    \subsubsection*{Solution:}
+
+    \textbf{Known Information:}
+    The disease is extremely rare (1 in 10,000), so a 99\% accurate test will produce ${\sim}101$ positive tests out of 10,000 people, of which only 1 person actually has the disease---meaning 1 true positive and 100 false positives.
+
+    Therefore, the total probability of testing positive comes from two groups: people with the disease who test positive + people without the disease who test positive.
+
+    \medskip
+    \textbf{Definitions:}
+    \begin{itemize}
+        \item Hypothesis $H$: you have the disease
+        \item Prior: $P(H) = \frac{1}{10{,}000} = 0.0001$ \quad (rate of the disease in the population)
+        \item $P(E \mid H) = 0.99$ \quad (true positive: test is positive given you have the disease)
+        \item $P(E \mid \neg H) = 0.01$ \quad (false positive: test is positive given you don't have the disease)
+    \end{itemize}
+
+    \medskip
+    \textbf{Step 1: Compute $P(E)$} --- the probability of testing positive across the entire population.
+
+    This is the sum of:
+    \begin{itemize}
+        \item People with disease testing positive: $P(E \mid H) \cdot P(H)$
+        \item People with no disease testing positive: $P(E \mid \neg H) \cdot P(\neg H)$
+    \end{itemize}
+
+    \begin{align*}
+        P(E) &= P(E \mid H) \cdot P(H) + P(E \mid \neg H) \cdot P(\neg H) \\
+              &= (0.99)(0.0001) + (0.01)(0.9999) \\
+              &= 0.000099 + 0.009999 \\
+              &= 0.010098
+    \end{align*}
+
+    \medskip
+    \textbf{Step 2: Apply Bayes' Theorem} --- of all the people who tested positive, what fraction truly have the disease.
+
+    \begin{align*}
+        P(H \mid E) &= \frac{P(E \mid H) \cdot P(H)}{P(E)} \\[6pt]
+                     &= \frac{(0.99)(0.0001)}{0.010098} \\[6pt]
+                     &= \frac{0.000099}{0.010098} \\[6pt]
+                     &= 0.00980392156
+    \end{align*}
+
+    \medskip
+    \textbf{Final Answer:} $P(H \mid E) \approx 0.9804\%$
+
+    \medskip
+    \textbf{Collaboration:} \texttt{hw0/chat\_conversation\_export\_A1.md} in Appendix section.
+
 \end{aprob}
+
+\noindent\rule{\textwidth}{0.4pt}
 
 \begin{aprob}
     Let $\mathbf{X} = \begin{bmatrix}
@@ -73,7 +98,91 @@ While not required to use the provided homework \LaTeX{} files, if you would lik
         \item \textbf{Part a:} Expression for $\E{X_i^2}$ and corresponding calculations
         \item \textbf{Part b:} Proof
     \end{itemize}
+
+    \subsubsection*{Solution:}
+
+    \begin{mdframed}
+    \textbf{\large Part a:} Find an expression for $\E{X_i^2}$
+    \end{mdframed}
+
+    \textbf{Known Information:}
+    \begin{itemize}
+        \item $\mathbf{X} = [X_1, \ldots, X_n]^\top$ is a random vector
+        \item $\E{X_i} = \boldsymbol\mu_i$ (mean of the $i$-th dimension/feature)
+        \item $\Cov{X_i}{X_j} = \boldsymbol\Sigma_{i,j}$ (covariance matrix entry)
+        \item From this we can deduce: $\Var{X_i} = \boldsymbol\Sigma_{i,i}$ (diagonal entries = variances, i.e.\ $i = j$)
+    \end{itemize}
+
+    \medskip
+    \textbf{Definitions:}
+    \begin{itemize}
+        \item Variance is the expected value of the squared deviation from the mean $\boldsymbol\mu$ of a random variable:
+        \[
+            \Var{X} = \E{(X - \mu)^2}
+        \]
+        \item When $c$ is a scalar/constant: $\E{c} = c$ and $\E{cX} = c\,\E{X}$
+        \item And $\mu = \E{X}$
+    \end{itemize}
+
+    \medskip
+    \textbf{Step 1:} Relation between $\mu$ and variance.
+    \begin{align*}
+        \Var{X} &= \E{(X - \mu)^2} \\
+                &= \E{X^2 - 2X\mu + \mu^2} \\
+                &= \E{X^2} - \E{2X\mu} + \E{\mu^2}
+    \end{align*}
+
+    \textbf{Step 2:} $2$ and $\mu$ are constants and $\E{c} = c$; replace constants and simplify.
+    \begin{align*}
+        \Var{X} &= \E{X^2} - 2\mu\,\E{X} + \mu^2 \\
+                &= \E{X^2} - 2\mu^2 + \mu^2 \\
+                &= \E{X^2} - \mu^2
+    \end{align*}
+
+    Therefore:
+    \begin{align*}
+        \boldsymbol\Sigma_{i,i} &= \E{X_i^2} - \boldsymbol\mu_i^2 \\
+        \E{X_i^2} &= \boldsymbol\Sigma_{i,i} + \boldsymbol\mu_i^2
+    \end{align*}
+
+    \medskip
+    \textbf{Final Answer:} $\boxed{\E{X_i^2} = \boldsymbol\Sigma_{i,i} + \boldsymbol\mu_i^2}$
+
+    \bigskip
+    \begin{mdframed}
+    \textbf{\large Part b:} Show that $\E{\mathbf{X}^\top \mathbf{X}} = \mathrm{tr}(\boldsymbol\Sigma) + \boldsymbol\mu^\top\boldsymbol\mu$
+    \end{mdframed}
+
+    $\mathbf{X} = [X_1, \ldots, X_n]^\top$ is a random vector, so its dot product is:
+    \[
+        \mathbf{X}^\top \mathbf{X} = X_1^2 + X_2^2 + X_3^2 + \cdots + X_n^2
+    \]
+
+    Expectation on the right-hand side can be written as a sum of individual expectations:
+    \[
+        \E{\mathbf{X}^\top \mathbf{X}} = \E{X_1^2} + \E{X_2^2} + \E{X_3^2} + \cdots + \E{X_n^2}
+    \]
+
+    Now replace using the relation derived in Part a:
+    \begin{align*}
+        \E{\mathbf{X}^\top \mathbf{X}} &= (\boldsymbol\Sigma_{1,1} + \boldsymbol\mu_1^2) + (\boldsymbol\Sigma_{2,2} + \boldsymbol\mu_2^2) + (\boldsymbol\Sigma_{3,3} + \boldsymbol\mu_3^2) + \cdots + (\boldsymbol\Sigma_{n,n} + \boldsymbol\mu_n^2) \\
+        &= (\boldsymbol\Sigma_{1,1} + \boldsymbol\Sigma_{2,2} + \boldsymbol\Sigma_{3,3} + \cdots + \boldsymbol\Sigma_{n,n}) + (\boldsymbol\mu_1^2 + \boldsymbol\mu_2^2 + \boldsymbol\mu_3^2 + \cdots + \boldsymbol\mu_n^2)
+    \end{align*}
+
+    \begin{itemize}
+        \item $(\boldsymbol\Sigma_{1,1} + \boldsymbol\Sigma_{2,2} + \boldsymbol\Sigma_{3,3} + \cdots + \boldsymbol\Sigma_{n,n})$ is the trace of the covariance matrix $= \mathrm{tr}(\boldsymbol\Sigma)$
+        \item $(\boldsymbol\mu_1^2 + \boldsymbol\mu_2^2 + \boldsymbol\mu_3^2 + \cdots + \boldsymbol\mu_n^2)$ is the dot product $= \boldsymbol\mu^\top \boldsymbol\mu$
+    \end{itemize}
+
+    \medskip
+    \textbf{Final Answer:} $\boxed{\E{\mathbf{X}^\top \mathbf{X}} = \mathrm{tr}(\boldsymbol\Sigma) + \boldsymbol\mu^\top \boldsymbol\mu}$ \qed
+
+    \medskip
+    \textbf{Collaboration:} \texttt{hw0/covariance\_matrix\_conversation\_A2.md} in Appendix section.
+
 \end{aprob}
+
+\noindent\rule{\textwidth}{0.4pt}
 
 \begin{aprob}
     Let $X_1, X_2, ..., X_n \sim \mathcal{N}(\mu, \sigma^2)$ be i.i.d. random variables. Compute the following:
@@ -94,7 +203,7 @@ While not required to use the provided homework \LaTeX{} files, if you would lik
     \end{itemize}
 \end{aprob}
 
-
+\noindent\rule{\textwidth}{0.4pt}
 
 \section*{Linear Algebra and Vector Calculus}
 \begin{aprob}
@@ -125,6 +234,7 @@ While not required to use the provided homework \LaTeX{} files, if you would lik
     \end{itemize}
 \end{aprob}
 
+\noindent\rule{\textwidth}{0.4pt}
 
 \begin{aprob} \label{prob:sumvec}
     For possibly non-symmetric $\mat{A}, \mat{B} \in \R^{n \times n}$ and $c \in \R$, let $f(x, y) = x^\top \mat{A} x + y^\top \mat{B} x + c$. Define
@@ -147,6 +257,8 @@ While not required to use the provided homework \LaTeX{} files, if you would lik
     \end{itemize}
 \end{aprob}
 
+\noindent\rule{\textwidth}{0.4pt}
+
 \begin{aprob}\label{prob:matrixtype}
     Show the following:
     \begin{enumerate}
@@ -164,6 +276,7 @@ While not required to use the provided homework \LaTeX{} files, if you would lik
     \end{itemize}
 \end{aprob}
 
+\noindent\rule{\textwidth}{0.4pt}
 
 \section*{Programming}
 \textbf{These problems are available in a .zip file}, with some starter code. All coding questions in this class will have starter code.
@@ -184,6 +297,8 @@ While not required to use the provided homework \LaTeX{} files, if you would lik
         \item \textbf{Code} on Gradescope through coding submission
     \end{itemize}
 \end{aprob}
+
+\noindent\rule{\textwidth}{0.4pt}
 
 \begin{aprob}
     Two random variables $X$ and $Y$ have equal  distributions if their CDFs, $F_X$ and $F_Y$, respectively, are equal, i.e. for all $x$, $ \abs{F_X(x) - F_Y(x)} = 0$. 
@@ -215,5 +330,161 @@ While not required to use the provided homework \LaTeX{} files, if you would lik
         \item \textbf{Code} on Gradescope through coding submission
     \end{itemize}
 \end{aprob}
+
+\clearpage{}
+\appendix
+\section*{Appendix: AI Collaboration Transcripts}
+
+\subsection*{A1 --- Bayes' Theorem (chat\_conversation\_export\_A1.md)}
+
+\begin{mdframed}
+\textbf{User:} \\
+After your yearly checkup, the doctor has bad news and good news. The bad news is that you tested positive for a serious disease, and that the test is 99\% accurate (i.e., the probability of testing positive given that you have the disease is 0.99, as is the probability of testing negative given that you don't have the disease). The good news is that this is a rare disease, striking only one in 10,000 people. What are the chances that you actually have the disease?
+
+Please include links only don't describe the solution or the details of the concepts. I want to solve the problem after reading the material, don't solve the problem.
+
+\bigskip
+\textbf{Assistant:}
+\begin{itemize}[leftmargin=*]
+    \item \href{https://www.khanacademy.org/math/ap-statistics/probability-ap/stats-conditional-probability/a/tree-diagrams-conditional-probability}{Khan Academy --- Tree diagrams and conditional probability}
+    \item \href{https://ocw.mit.edu/courses/18-05-introduction-to-probability-and-statistics-spring-2022/mit18_05_s22_lec03.pdf}{MIT OpenCourseWare --- Conditional Probability, Independence, Bayes' Theorem (18.05)}
+    \item \href{https://ocw.mit.edu/courses/6-1200j-mathematics-for-computer-science-spring-2024/mit6_1200j_s24_lec19.pdf}{MIT OpenCourseWare --- Conditional Probability Lecture Notes (Mathematics for Computer Science)}
+    \item \href{https://seeing-theory.brown.edu/}{Seeing Theory --- Bayesian Inference}
+    \item \href{https://en.wikipedia.org/wiki/Conditional_probability}{Wikipedia --- Conditional probability}
+    \item \href{https://en.wikipedia.org/wiki/Base_rate_fallacy}{Wikipedia --- Base rate fallacy}
+\end{itemize}
+
+\bigskip
+\textbf{User:} \\
+My intuition, look at false positive and true positives of a test in population and use that information to find out probability. Is that right direction? Don't solve the problem.
+
+\bigskip
+\textbf{Assistant:} \\
+Yes. That is the right direction.
+
+You want to think in terms of:
+\begin{itemize}[leftmargin=*]
+    \item how many people in a large population actually have the disease
+    \item how many of those test positive
+    \item how many people do \textbf{not} have the disease
+    \item how many of those still test positive anyway
+\end{itemize}
+
+Then compare:
+\begin{itemize}[leftmargin=*]
+    \item \textbf{true positives}
+\end{itemize}
+against
+\begin{itemize}[leftmargin=*]
+    \item \textbf{all positives}
+\end{itemize}
+
+That framing is exactly the useful one here. Another good lens to review is \textbf{conditional probability / Bayes' theorem}, but your population-count intuition is often the cleanest way to reason it out.
+
+\bigskip
+\textbf{User:} \\
+Download this chat conversation as an MD file.
+\end{mdframed}
+
+\subsection*{A2 --- Covariance Matrix (covariance\_matrix\_conversation\_A2.md)}
+
+\begin{mdframed}
+\textbf{User:} \\
+Explain covariance matrix with 3 components/dimensions with a real world example.
+
+\bigskip
+\textbf{Assistant:} \\
+Think of a covariance matrix as a compact way to describe how several quantities vary on their own and how they move together.
+
+With \textbf{3 components}, the covariance matrix is a \textbf{3$\times$3 table}.
+
+Let's use a real-world example:
+
+Suppose you track, over many days, these 3 things for a delivery company:
+\begin{itemize}[leftmargin=*]
+    \item $X_1$: number of packages delivered
+    \item $X_2$: fuel used
+    \item $X_3$: driver overtime hours
+\end{itemize}
+
+Then the covariance matrix is:
+\[
+\boldsymbol\Sigma =
+\begin{bmatrix}
+\mathrm{Var}(X_1) & \mathrm{Cov}(X_1, X_2) & \mathrm{Cov}(X_1, X_3) \\
+\mathrm{Cov}(X_2, X_1) & \mathrm{Var}(X_2) & \mathrm{Cov}(X_2, X_3) \\
+\mathrm{Cov}(X_3, X_1) & \mathrm{Cov}(X_3, X_2) & \mathrm{Var}(X_3)
+\end{bmatrix}
+\]
+
+\textbf{What each entry means:}
+
+\textbf{Diagonal entries = variances} --- these tell you how much each variable fluctuates by itself.
+\begin{itemize}[leftmargin=*]
+    \item $\mathrm{Var}(X_1)$: how much package count changes from day to day
+    \item $\mathrm{Var}(X_2)$: how much fuel usage changes
+    \item $\mathrm{Var}(X_3)$: how much overtime changes
+\end{itemize}
+Big variance means that quantity is less stable.
+
+\textbf{Off-diagonal entries = covariances} --- these tell you whether two variables tend to rise and fall together.
+\begin{itemize}[leftmargin=*]
+    \item $\mathrm{Cov}(X_1, X_2)$: when deliveries go up, does fuel use also go up?
+    \item $\mathrm{Cov}(X_1, X_3)$: when deliveries go up, does overtime also increase?
+    \item $\mathrm{Cov}(X_2, X_3)$: when fuel use is high, is overtime usually high too?
+\end{itemize}
+
+Interpretation:
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Positive covariance}: they tend to increase together
+    \item \textbf{Negative covariance}: when one goes up, the other tends to go down
+    \item \textbf{Near zero covariance}: no clear linear relationship
+\end{itemize}
+
+\textbf{Example with numbers:}
+
+Imagine the covariance matrix from your data is:
+\[
+\boldsymbol\Sigma =
+\begin{bmatrix}
+100 & 40 & 25 \\
+40 & 64 & 20 \\
+25 & 20 & 16
+\end{bmatrix}
+\]
+
+Here is how to read it:
+\begin{itemize}[leftmargin=*]
+    \item \textbf{100}: package deliveries vary quite a bit
+    \item \textbf{64}: fuel use also varies, but a little less
+    \item \textbf{16}: overtime varies the least
+\end{itemize}
+
+And the relationships:
+\begin{itemize}[leftmargin=*]
+    \item \textbf{40} between deliveries and fuel: busier days usually use more fuel
+    \item \textbf{25} between deliveries and overtime: more deliveries usually mean more overtime
+    \item \textbf{20} between fuel and overtime: when routes are heavy enough to burn more fuel, overtime also tends to rise
+\end{itemize}
+
+\textbf{Why it is a matrix:}
+
+Because with 3 variables, you need to describe each variable's own spread and each pairwise relationship. For 3 variables, that means 3 variances and 3 pairwise covariances. The matrix keeps all of that organized in one object.
+
+\textbf{Geometric intuition:}
+
+If you imagine each day as a point in 3D space (packages, fuel, overtime), then the covariance matrix tells you the \textbf{shape of the cloud of points}.
+\begin{itemize}[leftmargin=*]
+    \item Large variance in one direction $\rightarrow$ cloud spreads more along that axis
+    \item Positive covariance between two variables $\rightarrow$ cloud tilts along those two axes
+    \item Negative covariance $\rightarrow$ cloud tilts the opposite way
+\end{itemize}
+
+So the covariance matrix tells you both \textbf{how wide} the data is in each direction and \textbf{how tilted} the data is because variables move together.
+
+\bigskip
+\textbf{User:} \\
+Export this conversation as an MD file.
+\end{mdframed}
 
 \end{document}%
