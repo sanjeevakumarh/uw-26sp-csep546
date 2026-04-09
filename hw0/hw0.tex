@@ -518,6 +518,103 @@
         \item \textbf{Part a:} Explicit formula for $g$
         \item \textbf{Parts a-d:} Proof
     \end{itemize}
+
+    \subsubsection*{Solution:}
+
+    \begin{mdframed}
+    \textbf{\large Part a:} Find $g$ such that $\diag(v)^{-1} = \diag(w)$
+    \end{mdframed}
+
+    \textbf{Known:}
+    \begin{itemize}
+        \item Vectors $v$ and $w$ in $\R^n$, with all $v_i \neq 0$
+        \item Function $g$ where $g(v_i) = w_i$
+        \item To invert any matrix $M$, we need $M^{-1}$ such that $M \cdot M^{-1} = \mathbf{I}$
+        \item For a diagonal matrix --- flip each diagonal entry by $\frac{1}{x_{i,i}}$
+    \end{itemize}
+
+    \medskip
+    Let $\diag(v)$ be (representing only $n=3$):
+    \[
+        \mathbf{V} = \begin{bmatrix} v_{1} & 0 & 0 \\ 0 & v_{2} & 0 \\ 0 & 0 & v_{3} \end{bmatrix}
+    \]
+
+    Now $V^{-1} = \diag(v)^{-1}$ will be:
+    \[
+        \begin{bmatrix} 1/v_{1} & 0 & 0 \\ 0 & 1/v_{2} & 0 \\ 0 & 0 & 1/v_{3} \end{bmatrix}
+    \]
+
+    For $\diag(v)^{-1} = \diag(w)$ to be true we need $w_i = 1/v_i$ for all $i$.
+
+    Therefore $g(v_i) = 1/v_i$.
+
+    \medskip
+    \textbf{Final Result:} $\boxed{g(x) = \dfrac{1}{x}}$
+
+    \bigskip
+    \begin{mdframed}
+    \textbf{\large Part b:} Show that $\|\mat{A}x\|_2^2 = \|x\|_2^2$
+    \end{mdframed}
+
+    \textbf{Known:} $\mat{A}$ is orthonormal: $\mat{A}\mat{A}^\top = \mat{A}^\top\mat{A} = \mathbf{I}$
+
+    \medskip
+    \textbf{Proof:}
+
+    Step 1 --- Squared $L_2$ norm:
+    \[
+        \|\mat{A}x\|_2^2 = (\mat{A}x)^\top(\mat{A}x)
+    \]
+
+    Step 2 --- Expand $(\mat{A}x)^\top = x^\top \mat{A}^\top$:
+    \[
+        \|\mat{A}x\|_2^2 = x^\top \mat{A}^\top \mat{A}\, x
+    \]
+
+    Step 3 --- Since $\mat{A}^\top \mat{A} = \mathbf{I}$:
+    \[
+        \|\mat{A}x\|_2^2 = x^\top \mathbf{I}\, x = x^\top x = \|x\|_2^2
+    \]
+
+    \textbf{Final Result:} $\boxed{\|\mat{A}x\|_2^2 = \|x\|_2^2}$ \qed
+
+    \bigskip
+    \begin{mdframed}
+    \textbf{\large Part c:} Show that $\mat{B}^{-1}$ is symmetric
+    \end{mdframed}
+
+    \textbf{Known:} $\mat{B}$ is invertible and symmetric ($\mat{B} = \mat{B}^\top$)
+
+    \medskip
+    \textbf{Proof:}
+
+    Step 1: Start from $\mat{B} \cdot \mat{B}^{-1} = \mathbf{I}$.
+
+    Take transpose of both sides:
+    \[
+        (\mat{B} \cdot \mat{B}^{-1})^\top = \mathbf{I}^\top
+    \]
+    \[
+        (\mat{B}^{-1})^\top \cdot \mat{B}^\top = \mathbf{I}
+    \]
+
+    Step 2: Replace $\mat{B}^\top = \mat{B}$ (since $\mat{B}$ is symmetric):
+    \[
+        (\mat{B}^{-1})^\top \cdot \mat{B} = \mathbf{I}
+    \]
+
+    This means $(\mat{B}^{-1})^\top$ is a left inverse of $\mat{B}$. Since $\mat{B}$ is invertible, the left inverse equals the inverse:
+    \[
+        (\mat{B}^{-1})^\top = \mat{B}^{-1}
+    \]
+
+    \textbf{Final Result:} $\mat{B}^{-1}$ is symmetric. \qed
+
+    \bigskip
+    \begin{mdframed}
+    \textbf{\large Part d:} Show that eigenvalues of a PSD matrix are non-negative \hfill \textit{(Need more time to revise and solve PSD related problems. Skipped.)}
+    \end{mdframed}
+
 \end{aprob}
 
 \noindent\rule{\textwidth}{0.4pt}
