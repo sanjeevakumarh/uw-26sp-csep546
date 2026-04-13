@@ -84,6 +84,7 @@
 
 \noindent\rule{\textwidth}{0.4pt}
 
+\clearpage{}
 \begin{aprob}
     Let $\mathbf{X} = \begin{bmatrix}
         X_1 & \cdots & X_n
@@ -184,6 +185,7 @@
 
 \noindent\rule{\textwidth}{0.4pt}
 
+\clearpage{}
 \begin{aprob}
     Let $X_1, X_2, ..., X_n \sim \mathcal{N}(\mu, \sigma^2)$ be i.i.d. random variables. Compute the following:
     \begin{enumerate}
@@ -231,8 +233,51 @@
 
     \bigskip
     \begin{mdframed}
-    \textbf{\large Part b:} Compute $\E{|aX_1+b|}$ \hfill \textit{(need to revise concepts to solve part c, skipping it.)}
+    \textbf{\large Part b:} Compute $\E{|aX_1+b|}$
     \end{mdframed}
+
+    \textbf{Known:}
+    \begin{itemize}
+        \item $a = \frac{1}{\sigma}$, \; $b = -\frac{\mu}{\sigma}$
+        \item Standard PDF: $\varphi(z) = \frac{1}{\sqrt{2\pi}} e^{-z^2/2}$
+        \item $\varphi(z)$ is symmetric around 0 (symmetric bell curve at 0)
+    \end{itemize}
+
+    \medskip
+    \textbf{Step 1:} Simplify what's inside the absolute value.
+
+    From Part a we know $aX_1 + b \sim \mathcal{N}(0, 1)$, a standard normal random variable. Call it $Z$.
+
+    \medskip
+    \textbf{Step 2:} Expected value of a function of a continuous random variable is integrating the function times the PDF.
+    \[
+        \E{|Z|} = \int_{-\infty}^{\infty} |z| \cdot \varphi(z)\, dz
+    \]
+
+    Split the integral and use the symmetry to simplify:
+    \begin{align*}
+        \E{|Z|} &= \int_{-\infty}^{0} (-z)\, \varphi(z)\, dz + \int_{0}^{\infty} z\, \varphi(z)\, dz \\
+        &= 2 \int_{0}^{\infty} z\, \varphi(z)\, dz \\
+        &= 2 \int_{0}^{\infty} z \cdot \frac{1}{\sqrt{2\pi}}\, e^{-z^2/2}\, dz
+    \end{align*}
+
+    \medskip
+    \textbf{Step 3:} Evaluate using u-substitution.
+
+    Let $u = z^2/2$, then $du = z\,dz$. When $z=0$, $u=0$; when $z \to \infty$, $u \to \infty$.
+
+    Rewrite:
+    \[
+        \E{|Z|} = \frac{2}{\sqrt{2\pi}} \int_{0}^{\infty} e^{-u}\, du
+    \]
+
+    The antiderivative of $e^{-u}$ is $-e^{-u}$:
+    \[
+        = \frac{2}{\sqrt{2\pi}} \Big[-e^{-u}\Big]_0^{\infty} = \frac{2}{\sqrt{2\pi}} \cdot 1 = \frac{2}{\sqrt{2\pi}}
+    \]
+
+    \medskip
+    \textbf{Final Result:} $\boxed{\E{|aX_1 + b|} = \sqrt{\dfrac{2}{\pi}} \approx 0.7979}$
 
     \bigskip
     \begin{mdframed}
@@ -303,6 +348,7 @@
 
 \noindent\rule{\textwidth}{0.4pt}
 
+\clearpage{}
 \section*{Linear Algebra and Vector Calculus}
 \begin{aprob}
     Let $\mathbf{A} = \begin{bmatrix}
@@ -480,6 +526,7 @@
 
 \noindent\rule{\textwidth}{0.4pt}
 
+\clearpage{}
 \begin{aprob} \label{prob:sumvec}
     For possibly non-symmetric $\mat{A}, \mat{B} \in \R^{n \times n}$ and $c \in \R$, let $f(x, y) = x^\top \mat{A} x + y^\top \mat{B} x + c$. Define
     $$\nabla_z f(x,y) = \begin{bmatrix}
@@ -499,10 +546,156 @@
         \item \textbf{Parts b:} Summation form and corresponding calculations. Summation form includes writing out what each component of the resultant vector is, where each component is expressed as a summation. Intermediate components may be indicated by ellipses, like in the equation given in the problem description.
         \item \textbf{Part c:} Vector form and corresponding calculations. Vector form includes writing the final answer only in terms of products, sums (or differences), and/or transposes of the input matrices and vectors.
     \end{itemize}
+
+    \subsubsection*{Solution:}
+
+    \begin{mdframed}
+    \textbf{\large Part a:} Write $f(x,y)$ in terms of components $A_{i,j}$ and $B_{i,j}$
+    \end{mdframed}
+
+    An example with $n = 2$:
+    \[
+        x = \begin{bmatrix} x_1 \\ x_2 \end{bmatrix}, \quad \mat{A} = \begin{bmatrix} A_{1,1} & A_{1,2} \\ A_{2,1} & A_{2,2} \end{bmatrix}
+    \]
+
+    \textbf{Step 1:} Compute $\mat{A}x$:
+    \[
+        \mat{A}x = \begin{bmatrix} A_{1,1} x_1 + A_{1,2} x_2 \\ A_{2,1} x_1 + A_{2,2} x_2 \end{bmatrix}
+    \]
+
+    \textbf{Step 2:} Compute $x^\top(\mat{A}x)$. Observe $x^\top$ is a row vector and $\mat{A}x$ is a column vector, therefore the result is a scalar.
+    \begin{align*}
+        x^\top \mat{A} x &= x_1(A_{1,1} x_1 + A_{1,2} x_2) + x_2(A_{2,1} x_1 + A_{2,2} x_2) \\
+        &= x_1 A_{1,1} x_1 + x_1 A_{1,2} x_2 + x_2 A_{2,1} x_1 + x_2 A_{2,2} x_2
+    \end{align*}
+
+    Based on this, the pattern is $x_i \cdot A_{i,j} \cdot x_j$ for some $i, j$:
+    \[
+        x^\top \mat{A} x = \sum_{i=1}^{n} \sum_{j=1}^{n} x_i \, A_{i,j} \, x_j
+    \]
+
+    \textbf{Step 3:} Similarly, $y^\top \mat{B} x$ --- every term is $y_i \cdot B_{i,j} \cdot x_j$:
+    \[
+        y^\top \mat{B} x = \sum_{i=1}^{n} \sum_{j=1}^{n} y_i \, B_{i,j} \, x_j
+    \]
+
+    \textbf{Final Result:}
+    \[
+        \boxed{f(x,y) = \sum_{i=1}^{n} \sum_{j=1}^{n} x_i \, A_{i,j} \, x_j + \sum_{i=1}^{n} \sum_{j=1}^{n} y_i \, B_{i,j} \, x_j + c}
+    \]
+
+    \bigskip
+    \begin{mdframed}
+    \textbf{\large Part b:} $\nabla_x f(x,y)$ and $\nabla_y f(x,y)$ in summation form
+    \end{mdframed}
+
+    To find the $k$-th component of the gradient with respect to $x$, take $\frac{\partial f}{\partial x_k}$.
+
+    \medskip
+    Using the $n=2$ example from Part a:
+    \[
+        x^\top \mat{A} x = x_1 A_{1,1} x_1 + x_1 A_{1,2} x_2 + x_2 A_{2,1} x_1 + x_2 A_{2,2} x_2
+    \]
+
+    Consider $\frac{\partial f}{\partial x_1}$ (with $n=2$):
+    \begin{itemize}
+        \item $x_1 A_{1,1} x_1 \Rightarrow A_{1,1} x_1^2$, derivative $= 2A_{1,1} x_1$
+        \item $x_1 A_{1,2} x_2$, derivative $= A_{1,2} x_2$ ($x_2$ is constant w.r.t.\ $x_1$)
+        \item $x_2 A_{2,1} x_1$, derivative $= A_{2,1} x_2$ ($x_2$ is constant w.r.t.\ $x_1$)
+        \item $x_2 A_{2,2} x_2$, derivative $= 0$ ($x_2$ is constant w.r.t.\ $x_1$)
+    \end{itemize}
+
+    Therefore:
+    \[
+        \frac{\partial}{\partial x_1}(x^\top \mat{A} x) = 2A_{1,1} x_1 + A_{1,2} x_2 + A_{2,1} x_2
+    \]
+
+    Rewriting as two series (since $x_k$ contributes twice --- once as left term, once as right term):
+    \[
+        \frac{\partial}{\partial x_1}(x^\top \mat{A} x) = (A_{1,1} x_1 + A_{1,2} x_2) + (A_{1,1} x_1 + A_{2,1} x_2)
+    \]
+
+    For general $k$:
+    \begin{itemize}
+        \item When $i = k$: contributes $\sum_j A_{k,j} x_j$ ($x_k$ appears as the left factor)
+        \item When $j = k$: contributes $\sum_i A_{i,k} x_i$ ($x_k$ appears as the right factor)
+    \end{itemize}
+    \[
+        \frac{\partial}{\partial x_k}(x^\top \mat{A} x) = \sum_{j=1}^n A_{k,j}\, x_j + \sum_{i=1}^n A_{i,k}\, x_i
+    \]
+
+    For the term $y^\top \mat{B} x$: $\sum_i \sum_j y_i B_{i,j} x_j$ only involves $x_j$, so differentiating w.r.t.\ $x_k$ ($j = k$):
+    \[
+        \frac{\partial}{\partial x_k}(y^\top \mat{B} x) = \sum_{i=1}^n y_i\, B_{i,k}
+    \]
+
+    The constant $c$ has zero derivative.
+
+    \medskip
+    \textbf{For $\nabla_y f$:} take $\frac{\partial f}{\partial y_k}$:
+    \begin{itemize}
+        \item $x^\top \mat{A} x$ has no $y$ terms $\Rightarrow$ derivative is 0
+        \item $y^\top \mat{B} x$: differentiate $\sum_i \sum_j y_i B_{i,j} x_j$ w.r.t.\ $y_k$ ($i = k$): $= \sum_j B_{k,j}\, x_j$
+        \item $c$ has zero derivative
+    \end{itemize}
+
+    \medskip
+    \textbf{Final Result:}
+    \[
+        \boxed{\left[\nabla_x f\right]_k = \sum_{j=1}^n A_{k,j}\, x_j + \sum_{i=1}^n A_{i,k}\, x_i + \sum_{i=1}^n y_i\, B_{i,k}}
+    \]
+    \[
+        \boxed{\left[\nabla_y f\right]_k = \sum_{j=1}^n B_{k,j}\, x_j}
+    \]
+
+    \bigskip
+    \begin{mdframed}
+    \textbf{\large Part c:} $\nabla_x f(x,y)$ and $\nabla_y f(x,y)$ in vector notation
+    \end{mdframed}
+
+    From Part b we have:
+    \[
+        [\nabla_x f]_k = \sum_j A_{k,j}\, x_j + \sum_i A_{i,k}\, x_i + \sum_i y_i\, B_{i,k}
+    \]
+
+    \textbf{Step 1:} Identify equivalent matrix operation for $\sum_j A_{k,j}\, x_j$.
+
+    This is row $k$ of $\mat{A}$ dotted with $x$ --- the $k$-th entry of $\mat{A}x$.
+
+    Example ($n=2$, $k=1$): $A_{1,1} x_1 + A_{1,2} x_2$ = row 1 of $\mat{A}$ dotted with $x$ = $(\mat{A}x)_1$.
+
+    \medskip
+    \textbf{Step 2:} Identify equivalent matrix operation for $\sum_i A_{i,k}\, x_i$.
+
+    This is column $k$ of $\mat{A}$ dotted with $x$. Column $k$ of $\mat{A}$ = row $k$ of $\mat{A}^\top$.
+
+    Example ($n=2$, $k=1$): $A_{1,1} x_1 + A_{2,1} x_2$ = column 1 of $\mat{A}$ dotted with $x$ = $(\mat{A}^\top x)_1$.
+
+    \medskip
+    \textbf{Step 3:} Identify equivalent matrix operation for $\sum_i y_i\, B_{i,k}$.
+
+    Same pattern as Step 2 but with $y$ and $\mat{B}$: column $k$ of $\mat{B}$ dotted with $y$ = row $k$ of $\mat{B}^\top$ dotted with $y$ = the $k$-th entry of $\mat{B}^\top y$.
+
+    \medskip
+    Adding all the parts, $\nabla_x f$ for each component $k$ is $(\mat{A}x)_k + (\mat{A}^\top x)_k + (\mat{B}^\top y)_k$:
+
+    \medskip
+    \textbf{Step 4:} With the same analysis for $\nabla_y f$: $\sum_j B_{k,j}\, x_j$ is the $k$-th entry of $\mat{B}x$.
+
+    \medskip
+    \textbf{Final Result:}
+    \[
+        \boxed{\nabla_x f(x,y) = \mat{A}x + \mat{A}^\top x + \mat{B}^\top y = (\mat{A} + \mat{A}^\top)x + \mat{B}^\top y}
+    \]
+    \[
+        \boxed{\nabla_y f(x,y) = \mat{B}x}
+    \]
+
 \end{aprob}
 
 \noindent\rule{\textwidth}{0.4pt}
 
+\clearpage{}
 \begin{aprob}\label{prob:matrixtype}
     Show the following:
     \begin{enumerate}
@@ -619,6 +812,7 @@
 
 \noindent\rule{\textwidth}{0.4pt}
 
+\clearpage{}
 \section*{Programming}
 \textbf{These problems are available in a .zip file}, with some starter code. All coding questions in this class will have starter code.
 \textbf{Before attempting these problems, you will need to set up a uv environment that you will use for every assignment in the course. Unzip the HW0-A.zip file and read the instructions in the README file to get started.}
@@ -641,6 +835,7 @@
 
 \noindent\rule{\textwidth}{0.4pt}
 
+\clearpage{}
 \begin{aprob}
     Two random variables $X$ and $Y$ have equal  distributions if their CDFs, $F_X$ and $F_Y$, respectively, are equal, i.e. for all $x$, $ \abs{F_X(x) - F_Y(x)} = 0$. 
     The central limit theorem says that the sum of $k$ independent, zero-mean, variance $1/k$ random variables converges to a (standard) Normal distribution as $k$ tends to infinity.  
