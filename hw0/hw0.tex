@@ -831,6 +831,95 @@
         \item \textbf{Part c:} Explanation for the difference (1-2 sentences)
         \item \textbf{Code} on Gradescope through coding submission
     \end{itemize}
+
+    \subsubsection*{Solution:}
+
+    \begin{mdframed}
+    \textbf{\large Part a:} Vanilla Python implementation of \texttt{vanilla\_solution}
+    \end{mdframed}
+
+\begin{verbatim}
+def vanilla_solution(x: Vector, y: Vector, A: Matrix, B: Matrix) -> Vector:
+    # Transpose A and B
+    A_T = vanilla_transpose(A)
+    B_T = vanilla_transpose(B)
+
+    # Add A + A^T (element-by-element)
+    A_plus_AT = []
+    for i in range(len(A)):
+        row = []
+        for j in range(len(A[0])):
+            row.append(A[i][j] + A_T[i][j])
+        A_plus_AT.append(row)
+
+    # Compute (A + A^T)x
+    term1 = vanilla_matmul(A_plus_AT, x)
+
+    # Compute B^T y
+    term2 = vanilla_matmul(B_T, y)
+
+    # Add the two vectors
+    result = []
+    for t1, t2 in zip(term1, term2):
+        result.append(t1 + t2)
+
+    return result
+\end{verbatim}
+
+    \bigskip
+    \begin{mdframed}
+    \textbf{\large Part b:} NumPy implementation of \texttt{numpy\_solution}
+    \end{mdframed}
+
+\begin{verbatim}
+def numpy_solution(
+    x: np.ndarray, y: np.ndarray, A: np.ndarray, B: np.ndarray
+) -> np.ndarray:
+    return (A + A.T) @ x + B.T @ y
+\end{verbatim}
+
+    \bigskip
+    \begin{mdframed}
+    \textbf{\large Part c:} Wall-clock time comparison and discussion
+    \end{mdframed}
+
+    \textbf{Execution Time Graph:}
+
+    \begin{center}
+        \includegraphics[width=4.5in]{./vanilla_vs_numpy_execution_time.png}
+    \end{center}
+
+    \medskip
+    \textbf{Timing Data (3 runs):}
+
+    \begin{center}
+    \begin{tabular}{|c|c|c|c|c|}
+    \hline
+    \textbf{Run} & \textbf{n} & \textbf{Vanilla (ms)} & \textbf{NumPy (ms)} \\
+    \hline
+    \multirow{4}{*}{1} & small & 0.0 & 0.0 \\
+    & & 6.5907 & 0.9986 \\
+    & & 48.5399 & 1.8718 \\
+    & large & 192.0126 & 2.9974 \\
+    \hline
+    \multirow{4}{*}{2} & small & 0.0 & 0.0 \\
+    & & 8.065 & 0.9986 \\
+    & & 49.9015 & 2.0058 \\
+    & large & 200.7771 & 3.564 \\
+    \hline
+    \multirow{4}{*}{3} & small & 0.0 & 0.0 \\
+    & & 13.704 & 0.0 \\
+    & & 42.3925 & 0.0 \\
+    & large & 195.6872 & 1.2134 \\
+    \hline
+    \end{tabular}
+    \end{center}
+
+    \medskip
+    \textbf{Discussion:}
+
+    Both implementations perform the same $O(n^2)$ work (matrix-vector multiplies, matrix addition). The algorithmic complexity is identical however vanilla Python's per-element interpreter overhead dominates at scale, while NumPy's compiled routines execute the same $O(n^2)$ work in optimized native code---in other words every multiplication or addition results in one call from Python to C code, whereas NumPy matrix operation is once per matrix operation. Underlying data structures used appear to be different as well, as the vanilla version uses Python lists, and the float objects are not guaranteed to be in contiguous blocks of memory, however NumPy arrays are stored contiguously resulting in better cache utilization.
+
 \end{aprob}
 
 \noindent\rule{\textwidth}{0.4pt}

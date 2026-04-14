@@ -64,9 +64,9 @@ def submit(_):
 
     # Cleanup previous submissions attempts
     if tmp_dir_path.exists():
-        robust_rmtree(tmp_dir_path)
+        shutil.rmtree(tmp_dir_path)
     if zip_file_path.exists():
-        os.remove(zip_file_path)
+        zip_file_path.unlink()
 
     # Copy tree over to temporary directory
     shutil.copytree(homework_path, tmp_dir_path, ignore=shutil.ignore_patterns("*.pyc", "tmp", "__pycache__", ".mypy_cache"))
@@ -75,5 +75,5 @@ def submit(_):
     shutil.make_archive(zip_file_path, "zip", tmp_dir_path)
 
     # Cleanup
-    robust_rmtree(tmp_dir_path)
+    shutil.rmtree(tmp_dir_path)
 
