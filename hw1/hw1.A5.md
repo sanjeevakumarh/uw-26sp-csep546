@@ -1,0 +1,50 @@
+
+title:: HW1.A5
+
+-
+	- MNIST dataset: 28×28 grayscale images of digits 0-9, flattened to $x_i \in \mathbb{R}^d$ where $d = 784$
+	- Labels $z_j \in \{0, \ldots, 9\}$, one-hot encoded as $y_i \in \{0,1\}^k$ where $k = 10$
+	- One-hot encoding: label $z$ maps to $e_{z+1}$ (standard basis vector with 1 at position $z+1$)
+	- Weight matrix $W \in \mathbb{R}^{d \times k}$, with columns $W = [w_1 \ldots w_k]$
+	- Frobenius norm: $\|W\|_F^2 = \sum_{i=1}^{d} \sum_{j=1}^{k} W_{i,j}^2$
+	- $X = [x_1 \ldots x_n]^\top \in \mathbb{R}^{n \times d}$ (data matrix, each row is one image)
+	- $Y = [y_1 \ldots y_n]^\top \in \mathbb{R}^{n \times k}$ (label matrix, each row is one-hot vector)
+- a. Derive the closed-form expression for $\hat{W}$
+	- Objective: minimize the regularized least squares
+		- $$\hat{W} = \text{argmin}_{W \in \mathbb{R}^{d \times k}} \sum_{i=1}^{n} \|W^T x_i - y_i\|_2^2 + \lambda\|W\|_F^2$$
+	- **Step 1: Decompose the Frobenius norm by columns**
+		- Since $W = [w_1 \ldots w_k]$, the Frobenius norm decomposes as:
+			- $$\|W\|_F^2 = \sum_{j=1}^{k} \|w_j\|_2^2$$
+		- each column's squared norm contributes independently to the total penalty.
+	- **Step 2: Decompose the data error term by columns**
+		- $W^T x_i$ is a $k$-dimensional vector. Its $j$-th entry is $e_j^T W^T x_i = w_j^T x_i$
+		- $y_i$'s $j$-th entry is $e_j^T y_i$
+		- So the squared error for one data point decomposes:
+			- $$\|W^T x_i - y_i\|_2^2 = \sum_{j=1}^{k} (w_j^T x_i - e_j^T y_i)^2$$
+	- **Step 3: Combine and rearrange the full objective**
+		- Substituting the decompositions into the objective:
+			- $$\sum_{i=1}^{n} \|W^T x_i - y_i\|_2^2 + \lambda\|W\|_F^2 = \sum_{j=1}^{k} \left[ \sum_{i=1}^{n} (w_j^T x_i - e_j^T y_i)^2 + \lambda\|w_j\|_2^2 \right]$$
+		- The inner sum over $i$ can be written in matrix form. Since $w_j^T x_i$ is the $i$-th entry of $Xw_j$, and $e_j^T y_i$ is the $i$-th entry of $Ye_j$ (the $j$-th column of $Y$):
+			- $$= \sum_{j=1}^{k} \left[ \|Xw_j - Ye_j\|_2^2 + \lambda\|w_j\|_2^2 \right]$$
+	- **Step 4: Each column is an independent ridge regression**
+		- The objective is a sum over $j = 1, \ldots, k$ where each term only involves $w_j$. Minimizing the total = minimizing each term independently.
+		- For each $j$, the problem is:
+			- $$\hat{w}_j = \text{argmin}_{w_j} \|Xw_j - Ye_j\|_2^2 + \lambda\|w_j\|_2^2$$
+		- This is standard ridge regression with target vector $Ye_j$ (the $j$-th column of $Y$).
+	- **Step 5: Solve each ridge regression**
+		- Expand the objective for column $j$:
+			- $$\|Xw_j - Ye_j\|_2^2 + \lambda\|w_j\|_2^2 = (Xw_j - Ye_j)^T(Xw_j - Ye_j) + \lambda w_j^T w_j$$
+			- $$= w_j^T X^T X w_j - 2w_j^T X^T Y e_j + e_j^T Y^T Y e_j + \lambda w_j^T w_j$$
+		- Differentiate with respect to $w_j$ and set to zero:
+			- $$\frac{\partial}{\partial w_j} = 2X^T X w_j - 2X^T Y e_j + 2\lambda w_j = 0$$
+			- $$(X^T X + \lambda I) w_j = X^T Y e_j$$
+			- $$\hat{w}_j = (X^T X + \lambda I)^{-1} X^T Y e_j$$
+	- **Step 6: Stack all columns back into W**
+		- Since $\hat{w}_j = (X^T X + \lambda I)^{-1} X^T Y e_j$ for each $j = 1, \ldots, k$
+		- And $[Ye_1 \; Ye_2 \; \ldots \; Ye_k] = Y$ (selecting each column of $Y$ reconstructs $Y$)
+		- Stacking all columns: $\hat{W} = [\hat{w}_1 \ldots \hat{w}_k] = (X^T X + \lambda I)^{-1} X^T [Ye_1 \ldots Ye_k]$
+			- $$\hat{W} = (X^T X + \lambda I)^{-1} X^T Y$$
+- Result
+	- $$\hat{W} = (X^T X + \lambda I)^{-1} X^T Y$$
+	- The multi-class ridge regression decomposes into $k$ independent single-output regression per class.
+		- Each shares the $(X^T X + \lambda I)^{-1} X^T$ factor — only target column of $Y$ differs.
