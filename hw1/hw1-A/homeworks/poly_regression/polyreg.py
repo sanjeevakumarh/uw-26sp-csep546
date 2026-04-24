@@ -20,7 +20,11 @@ class PolynomialRegression:
         # Fill in with matrix with the correct shape
         self.weight: np.ndarray = None  # type: ignore
         # You can add additional fields
-        raise NotImplementedError("Your Code Goes Here")
+        self.degree = degree
+        self.reg_lambda = reg_lambda
+        self.weight = None
+        self.mean = None
+        self.std = None
 
     @staticmethod
     @problem.tag("hw1-A")
@@ -38,7 +42,11 @@ class PolynomialRegression:
                 Note that the returned matrix will not include the zero-th power.
 
         """
-        raise NotImplementedError("Your Code Goes Here")
+        n = X.shape[0]
+        result = np.zeros((n, degree))
+        for d in range(1, degree + 1):
+            result[:, d - 1] = (X ** d).flatten()
+        return result
 
     @problem.tag("hw1-A")
     def fit(self, X: np.ndarray, y: np.ndarray):
@@ -52,7 +60,20 @@ class PolynomialRegression:
         Note:
             You will need to apply polynomial expansion and data standardization first.
         """
-        raise NotImplementedError("Your Code Goes Here")
+        X_poly = self.polyfeatures(X, self.degree)
+
+        self.mean = np.mean(X_poly, axis=0)
+        self.std = np.std(X_poly, axis=0)
+        X_poly = (X_poly - self.mean) / self.std
+
+        n = X_poly.shape[0]
+        X_poly = np.c_[np.ones((n, 1)), X_poly]
+
+        d = X_poly.shape[1]
+        reg_matrix = self.reg_lambda * np.eye(d)
+        reg_matrix[0, 0] = 0
+
+        self.weight = np.linalg.solve(X_poly.T @ X_poly + reg_matrix, X_poly.T @ y)
 
     @problem.tag("hw1-A")
     def predict(self, X: np.ndarray) -> np.ndarray:
@@ -65,7 +86,11 @@ class PolynomialRegression:
         Returns:
             np.ndarray: Array of shape (n, 1) with predictions.
         """
-        raise NotImplementedError("Your Code Goes Here")
+        X_poly = self.polyfeatures(X, self.degree)
+        X_poly = (X_poly - self.mean) / self.std
+        n = X_poly.shape[0]
+        X_poly = np.c_[np.ones((n, 1)), X_poly]
+        return X_poly @ self.weight
 
 
 @problem.tag("hw1-A")
@@ -79,7 +104,7 @@ def mean_squared_error(a: np.ndarray, b: np.ndarray) -> float:
     Returns:
         float: mean squared error between a and b.
     """
-    raise NotImplementedError("Your Code Goes Here")
+    return np.mean((a - b) ** 2)
 
 
 @problem.tag("hw1-A", start_line=5)
