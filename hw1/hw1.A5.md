@@ -44,7 +44,25 @@ title:: HW1.A5
 		- And $[Ye_1 \; Ye_2 \; \ldots \; Ye_k] = Y$ (selecting each column of $Y$ reconstructs $Y$)
 		- Stacking all columns: $\hat{W} = [\hat{w}_1 \ldots \hat{w}_k] = (X^T X + \lambda I)^{-1} X^T [Ye_1 \ldots Ye_k]$
 			- $$\hat{W} = (X^T X + \lambda I)^{-1} X^T Y$$
-- Result
-	- $$\hat{W} = (X^T X + \lambda I)^{-1} X^T Y$$
-	- The multi-class ridge regression decomposes into $k$ independent single-output regression per class.
+	- Result
+		- $$\hat{W} = (X^T X + \lambda I)^{-1} X^T Y$$
+		- The multi-class ridge regression decomposes into $k$ independent single-output regression per class.
 		- Each shares the $(X^T X + \lambda I)^{-1} X^T$ factor — only target column of $Y$ differs.
+- b. Implementation
+	- **Results** with $\lambda = 10^{-4}$
+		- Training error: 14.805%
+		- Testing error: 14.66%
+	- **`one_hot(y, num_classes)`** — converts integer label vector to binary matrix
+		- Input: $y \in \{0, \ldots, k-1\}^n$ (integer labels), $k$ = number of classes
+		- Output: $Y \in \{0,1\}^{n \times k}$ where each row has a single 1 at the column matching the label
+		- Example: $y = [2, 3, 1, 0]$ with $k=4$ produces rows $[0,0,1,0], [0,0,0,1], [0,1,0,0], [1,0,0,0]$
+		- Use NumPy fancy indexing: create an $n \times k$ zeros matrix, then set `result[i, y[i]] = 1` for all $i$ simultaneously
+	- **`train(X, Y, λ)`** — computes $\hat{W} = (X^T X + \lambda I)^{-1} X^T Y$
+		- Compute $A = X^T X + \lambda I$ where $I$ is the $d \times d$ identity matrix
+		- Compute $B = X^T Y$
+		- Solve $AW = B$ for $W$ using `np.linalg.solve(A, B)` — do NOT explicitly compute $A^{-1}$
+		- Why `solve` instead of inverse: solving the linear system directly is faster and more numerically stable. The problem hint states "if you are inverting a matrix, you are probably doing something wrong."
+	- **`predict(X, W)`** — classifies new inputs
+		- Compute scores: $S = XW$ where $S \in \mathbb{R}^{n \times k}$ — each row is a score vector over $k$ classes
+		- For each row, pick the class with the highest score: $\hat{z}_i = \text{argmax}_j \; S_{i,j}$
+		- Returns integer predictions $\in \{0, \ldots, 9\}$
