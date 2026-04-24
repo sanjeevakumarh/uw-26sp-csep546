@@ -1,0 +1,38 @@
+title:: HW1.A2
+
+- Known
+	- Reign FC scored [2, 4, 6, 0, 1] goals in 5 games. Model goals per game as Poisson with parameter λ
+	- Poisson distribution with parameter λ probability of Z+ is
+		- $$\text{Poi}(x|\lambda) = e^{-\lambda} \frac{\lambda^x}{x!}$$
+	- log of the likelihood has the same maximizer as the likelihood function itself.
+	- n games scores are iid.
+- a. Derive an expression for MLE.
+	- Since $n$ game scores are iid, the joint probability is the product of individual probabilities:
+		- $$L(\lambda) = \prod_{i=1}^{n} e^{-\lambda} \frac{\lambda^{x_i}}{x_i!}$$
+	- take the log of the likelihood - converts the product ($\prod$) into a sum ($\sum$)
+		- $$\ell(\lambda) = \log L(\lambda) = \sum_{i=1}^{n} \left[ -\lambda + x_i \log \lambda - \log(x_i!) \right]$$
+	- rearrange pats of the sum with $x_i$ variable.
+		- $$\ell(\lambda) = -n\lambda + \left(\sum_{i=1}^{n} x_i\right) \log \lambda - \sum_{i=1}^{n} \log(x_i!)$$
+	- Differentiate with respect to $d\lambda$
+		- $$\frac{d\ell}{d\lambda} = -n + \frac{\sum_{i=1}^{n} x_i}{\lambda}$$
+	- Set to zero and solve
+		- $$-n + \frac{\sum_{i=1}^{n} x_i}{\lambda} = 0$$
+		- $$\frac{\sum_{i=1}^{n} x_i}{\lambda} = n$$
+		- $$\hat{\lambda}_{MLE} = \frac{1}{n} \sum_{i=1}^{n} x_i = \bar{x}$$
+- Result
+	- The MLE for $\lambda$ is the sample mean: $\hat{\lambda} = \bar{x} = \frac{1}{n}\sum_{i=1}^{n} x_i$
+- b. Numerical estimate of P(6 goals) after 5 games score
+	- Calculate $\hat{\lambda}$
+		- $\hat{\lambda} = \bar{x} = \frac{2+4+6+0+1}{5} = \frac{13}{5} = 2.60$
+	- Probability of scoring exactly 6 goals next game => $P(X=6|\lambda=2.6)$
+		- $$P(X=6|\lambda=2.6) = e^{-2.6} \frac{2.6^6}{6!}$$
+		- $$P(X=6|\lambda=2.6) \approx 0.03187$$
+- c. Numerical estimate of P(6 goals) after 6 games score
+	- Calculate $\hat{\lambda}$
+		- $\hat{\lambda} = \bar{x} = \frac{2+4+6+0+1+8}{6} = \frac{21}{6} = 3.50$
+	- Probability of scoring exactly 6 goals next game => $P(X=6|\lambda=3.5)$
+		- $$P(X=6|\lambda=3.5) = e^{-3.5} \frac{3.5^6}{6!}$$
+		- $$P(X=6|\lambda=2.6) \approx 0.06976$$
+		-
+	-
+	-
