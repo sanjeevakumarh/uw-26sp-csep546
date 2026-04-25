@@ -141,4 +141,14 @@ def learningCurve(
     errorTrain = np.zeros(n)
     errorTest = np.zeros(n)
     # Fill in errorTrain and errorTest arrays
-    raise NotImplementedError("Your Code Goes Here")
+    for i in range(n):
+        model = PolynomialRegression(degree=degree, reg_lambda=reg_lambda)
+        model.fit(Xtrain[0:i+1], Ytrain[0:i+1])
+        
+        y_train_pred = model.predict(Xtrain[0:i+1])
+        errorTrain[i] = mean_squared_error(Ytrain[0:i+1], y_train_pred)
+        
+        y_test_pred = model.predict(Xtest)
+        errorTest[i] = mean_squared_error(Ytest, y_test_pred)
+
+    return errorTrain, errorTest
