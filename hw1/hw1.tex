@@ -1,9 +1,3 @@
-\DocumentMetadata{
-  tagging=on,
-  tagging-setup={math/setup=mathml-SE},
-  pdfstandard=ua-2,
-  lang=en-US
-}
 \documentclass{article}
 \usepackage{import}
 \subimport*{../}{macro}
@@ -12,220 +6,394 @@
 
 \begin{document}
 \setcounter{aprob}{0}
-\title{Homework \#1}
-\author{
-    \normalsize{CSEP 546: Machine Learning}\\
-    \normalsize{Professor Jamie Morgenstern}\\
-    \normalsize{Due: \textbf{Friday, April 24, 2026, 11:59pm}}\\
-    \normalsize{57 points}
-}
-\date{{}}
-\maketitle
 
-\noindent Please review all homework guidance posted on the website before submitting to Gradescope. Reminders:
+{\centering
+\Large\textbf{Homework \#1} \\[0.5em]
+\normalsize CSEP 546: Machine Learning \\
+Professor Jamie Morgenstern \\
+Due: \textbf{Friday, April 24, 2026, 11:59pm} \\
+57 points \\[1em]
+}
+
+\section*{A1 --- Short Answer and Conceptual Questions}
+
+\subsubsection*{Solution:}
+
+\begin{mdframed}
+\textbf{\large Part a:} Bias, Variance, and the Bias-Variance Tradeoff
+\end{mdframed}
+
+\textbf{Bias} measures how far off a model's expected predictions are from the true values --- it's the systematic error that comes from wrong assumptions in the model, such as insufficient features, incorrect hyperparameters, or poor parameter selection.
+
+Examples: (1) Fitting a straight line to data that's actually quadratic will consistently miss the curve no matter how much data you have. (2) A home sale price model that assigns high weight to exterior color or number of windows while missing key features like square footage --- it will systematically mis-estimate because the model's assumptions about what matters are wrong.
+
+\medskip
+\textbf{Variance} measures how much a model's predictions change when you train it on different samples of data. A high-variance model is overly sensitive to the specific training data it saw --- it picks up on noise and random fluctuations, deriving artificial patterns rather than learning the true underlying relationship.
+
+Examples: (1) A model estimating a building's livable area that treats every roofline data point as meaningful signal --- minor measurement noise in the roofline causes wildly different area estimates across training sets. (2) A degree-20 polynomial fit to 15 data points --- it threads perfectly through the training data but produces completely different curves with a slightly different sample, because it's fitting noise rather than the true trend.
+
+\medskip
+\textbf{The bias-variance tradeoff:} Total prediction error decomposes as $\text{Error} = \text{Bias}^2 + \text{Variance} + \text{irreducible noise}$. Simple models (few parameters) tend to have high bias and low variance --- they underfit. Complex models (many parameters) tend to have low bias and high variance --- they overfit. Reducing one typically increases the other. The goal is to find the model complexity that minimizes total error --- flexible enough to capture the real pattern but constrained enough not to memorize noise.
+
+The practical implication: it can be wise to use a biased estimator, so long as it reduces variance enough to lower the overall squared error (Murphy, chapter 6.4).
+
+\bigskip
+\begin{mdframed}
+\textbf{\large Part b:} Effect of model complexity on bias and variance
+\end{mdframed}
+
+\textbf{When model complexity increases} (more parameters, higher degree polynomial, more features): bias typically decreases because the model has more flexibility to fit the true underlying pattern. But variance typically increases because the model becomes more sensitive to the specific training data, and each trading data point is inclusive of irreducible noise, variance on validation data will be higher.
+
+\textbf{When model complexity decreases} (fewer parameters, stronger regularization, fewer features): bias typically increases because the model is too constrained to capture the true relationship. But variance typically decreases because the model is more stable across different training samples --- there's less room to overfit.
+
+\textbf{Edge cases} When an included feature that has very minimal predictive weight (ex: house number/street name in the sale price estimation) complexity is increased, but may not really reflect on bias decreasing, and conversely removal of such feature/dimension may not increase variance since the model was depending on a noisy dimension to start with.
+
+There are known techniques to control Variance like averaging over multiple models (ensembling), but bias cannot --- averaging equally biased models still produces a biased result.
+
+\bigskip
+\begin{mdframed}
+\textbf{\large Part c:} Fewer features always generalize better?
+\end{mdframed}
+
+\boxed{\textbf{False.}}
+
+Fewer features can improve generalization when the removed features are noisy or irrelevant, thus reducing variance and/or overfitting. But removing features that carry high predictive signal increases bias, and the model generalizes worse.
+
+For example, predicting home prices using square footage + school rating generalizes well (both carry meaningful signal). Dropping school rating would hurt generalization because important predictive information is lost.
+
+It depends on \textit{which} features are removed and whether the reduction in variance outweighs the increase in bias.
+
+\bigskip
+\begin{mdframed}
+\textbf{\large Part d:} Hyperparameters should be tuned on the test set?
+\end{mdframed}
+
+\boxed{\textbf{False.}}
+
+The test set exists to give an unbiased estimate of how the model will perform on unseen data. If hyperparameters are tuned on the test set, the model is effectively ``peeking'' at test data during training --- the test set is no longer unseen, and the produces (artificially) optimistic estimate for the model.
+
+\bigskip
+\begin{mdframed}
+\textbf{\large Part e:} Training error overestimates true error?
+\end{mdframed}
+
+\boxed{\textbf{False.}}
+
+Training error provides an \textbf{under}estimate of the true error. Since model's parameters were optimized specifically to minimize error on the training data, it will almost always perform better on the data it was trained on than on new, unseen data.
+
+Example: complex models with a high-degree polynomial can achieve near-zero training error for every training point, while its true error on new data is would typically be much higher due to overfitting.
+
+\noindent\rule{\textwidth}{0.4pt}
+
+\clearpage{}
+\section*{A2 --- Maximum Likelihood Estimation (MLE)}
+
+\subsubsection*{Solution:}
+
+\textbf{Known:}
 \begin{itemize}
-    \item All code must be written in Python and all written work must be typeset (e.g. \LaTeX{}).
-    \item Make sure to read the ``What to Submit'' section following each question and include all items.
-    \item Please provide succinct answers and supporting reasoning for each question. Similarly, when discussing experimental results, concisely create tables and/or figures when appropriate to organize the experimental results. All explanations, tables, and figures for any particular part of a question must be grouped together.
-    \item For every problem involving generating plots, please include the plots as part of your PDF submission.
-    \item When submitting to Gradescope, please link each question from the homework in Gradescope to the location of its answer in your homework PDF. Failure to do so may result in deductions of up to 10\% of the value of each question not properly linked. For instructions, see \href{https://www.gradescope.com/get_started#student-submission}{this Gradescope submission guide}.
-    \item \color{red}{\textbf{If you used AI tools on any part of this assignment, you must turn in a complete transcript of all conversations with AI systems as part of your submission. Failure to do so is a violation of the collaboration policy.}}
-    \item \color{red}{Make sure to submit your code by running \texttt{inv submit} from within the \texttt{csep546} uv environment and submitting the zip folder created. Submissions that don't follow this procedure will fail the autograder on Gradescope. After the due date, we will not accept resubmissions. \textbf{We suggest you wait for the autograder on Gradescope to complete and display your score before regarding the coding portion of assignments complete.}}
+    \item Reign FC scored $[2, 4, 6, 0, 1]$ goals in 5 games. Model goals per game as Poisson with parameter $\lambda$
+    \item Poisson distribution with parameter $\lambda$ probability of $\mathbb{Z}^+$ is
+    \[
+        \text{Poi}(x|\lambda) = e^{-\lambda} \frac{\lambda^x}{x!}
+    \]
+    \item log of the likelihood has the same maximizer as the likelihood function itself.
+    \item $n$ games scores are iid.
 \end{itemize}
 
-Not adhering to these reminders may result in point deductions. \\
+\begin{mdframed}
+\textbf{\large Part a:} Derive an expression for MLE
+\end{mdframed}
 
-\textbf{Important:} By turning in this assignment (and all that follow), you acknowledge that you have read and understood the collaboration policy with humans and AI assistants alike: \url{https://courses.cs.washington.edu/courses/csep546/26sp/assignments/}. Any questions about the policy should be raised at least 24 hours before the assignment is due. There are no warnings or second chances. If we suspect you have violated the collaboration policy, we will report it to the college of engineering who will complete an investigation.
+Since $n$ game scores are iid, the joint probability is the product of individual probabilities:
+\[
+    L(\lambda) = \prod_{i=1}^{n} e^{-\lambda} \frac{\lambda^{x_i}}{x_i!}
+\]
 
-\newpage
-\section*{Short Answer and ``True or False'' Conceptual questions}
-\begin{aprob}
-    The answers to these questions should be answerable without referring to external materials.  Briefly justify your answers with a few words.
-    \begin{enumerate}
-        \item\points{2} In your own words, describe what bias and variance are? What is bias-variance tradeoff?
-        \item \points{2} What \textbf{typically} happens to bias and variance when the model complexity increases/decreases?
-        \item \points{1} True or False: A learning algorithm will always generalize better if we use fewer features to represent our data. 
-        \item \points{2} True or False: Hyperparameters should be tuned on the test set. Explain your choice and detail a procedure for hyperparameter tuning.
-        \item \points{1} True or False: The training error of a function on the training set provides an overestimate of the true error of that function.
-    \end{enumerate}
-    \subsubsection*{What to Submit:}
-    \begin{itemize}
-        \item \textbf{Parts a-e:} Brief (2-3 sentence) explanation
-        \item \textbf{Parts c-e:} True or False
-    \end{itemize}
-\end{aprob}
+take the log of the likelihood - converts the product ($\prod$) into a sum ($\sum$):
+\[
+    \ell(\lambda) = \log L(\lambda) = \sum_{i=1}^{n} \left[ -\lambda + x_i \log \lambda - \log(x_i!) \right]
+\]
 
+rearrange pats of the sum with $x_i$ variable:
+\[
+    \ell(\lambda) = -n\lambda + \left(\sum_{i=1}^{n} x_i\right) \log \lambda - \sum_{i=1}^{n} \log(x_i!)
+\]
 
-\section*{Maximum Likelihood Estimation (MLE)}
+Differentiate with respect to $d\lambda$:
+\[
+    \frac{d\ell}{d\lambda} = -n + \frac{\sum_{i=1}^{n} x_i}{\lambda}
+\]
 
-\begin{aprob}
-    You're the Reign FC manager, and the team is five games into its 2021 season. The number of goals scored by the team in each game so far are given below:
-    
-    \[
-      [2, 4, 6, 0, 1].
-    \]
-    Let's call these scores $x_1, \dots, x_5$. Based on your (assumed iid) data, you'd like to build a model to understand how many goals the Reign are likely to score in their next game. You decide to model the number of goals scored per game using a \emph{Poisson distribution}. Recall that the Poisson distribution with parameter $\lambda$ assigns every non-negative integer $x = 0, 1, 2, \dots$ a probability given by
-    \[
-      \mathrm{Poi}(x | \lambda) = e^{-\lambda} \frac{\lambda ^ x}{x!}.
-    \]
-    
-    \begin{enumerate}
-        \item \points{5} Derive an expression for the maximum-likelihood estimate of the parameter $\lambda$ governing the Poisson distribution in terms of goal counts for the first $n$ games: $x_1, \dots, x_n$. (Hint: remember that the log of the likelihood has the same maximizer as the likelihood function itself.)
-        \item \points{2} Give a numerical estimate of $\lambda$ after the first five games. Given this $\lambda$, what is the probability that the Reign score $6$ goals in their next game?
-        \item \points{2} Suppose the Reign score 8 goals in their 6th game. Give an updated numerical estimate of $\lambda$ after six games and compute the probability that the Reign score $6$ goals in their 7th game.
-    \end{enumerate}
-    \subsubsection*{What to Submit:}
-    \begin{itemize}
-        \item \textbf{Part a:} An expression for the MLE of $\lambda$ after $n$ games and relevant derivation
-        \item \textbf{Parts b-c:} A numerical estimate for $\lambda$ and the probability that the Reign score 6 next game.
-    \end{itemize}
-\end{aprob}
+Set to zero and solve:
+\[
+    -n + \frac{\sum_{i=1}^{n} x_i}{\lambda} = 0
+\]
+\[
+    \frac{\sum_{i=1}^{n} x_i}{\lambda} = n
+\]
+\[
+    \hat{\lambda}_{\text{MLE}} = \frac{1}{n} \sum_{i=1}^{n} x_i = \bar{x}
+\]
 
+\textbf{Result:}
 
+The MLE for $\lambda$ is the sample mean: $\boxed{\hat{\lambda} = \bar{x} = \frac{1}{n}\sum_{i=1}^{n} x_i}$
 
-\newpage
-\section*{Polynomial Regression}
-{\bf Relevant Files}\footnote{{\bf Bold text} indicates files or functions that you will need to complete; you should not need to modify any of the other files.}
-\vspace{-1.2em}
-\begin{multicols}{2}
-    \begin{itemize}[noitemsep,nolistsep]
-        \item \texttt{\bf polyreg.py}
-        \item \texttt{linreg\_closedform.py}
-        \item \texttt{plot\_polyreg\_univariate.py}
-        \item \texttt{plot\_polyreg\_learningCurve.py}
-    \end{itemize}
-\end{multicols}
+\bigskip
+\begin{mdframed}
+\textbf{\large Part b:} Numerical estimate of $P(6 \text{ goals})$ after 5 games score
+\end{mdframed}
 
-\begin{aprob}
-    \points{10} Recall that polynomial regression learns a function $h_{\bm{\theta}}(x) = \theta_0 + \theta_1 x + \theta_2 x^2 + \ldots + \theta_d x^d$, where $d$ represents the polynomial's highest degree.  We can equivalently write this in the form of a  linear model with $d$ features
-    \begin{equation}
-        h_{\bm{\theta}}(x) = \theta_0 + \theta_1 \phi_1(x)  + \theta_2 \phi_2(x)  + \ldots + \theta_d \phi_d(x)  \enspace ,
-    \end{equation}
-    using the basis expansion that $\phi_j(x) = x^j$.  Notice that, with this basis expansion, we obtain a linear model where the features are various powers of the single univariate $x$.  We're still solving a linear regression problem, but are fitting a polynomial function of the input.\\
-    
-    Implement regularized polynomial regression in \texttt{polyreg.py}.  You may implement it however you like, using gradient descent or a closed-form solution.  However, I would recommend the closed-form solution since the data sets are small; for this reason, we've included an example closed-form implementation of linear regression in \texttt{linreg\_closedform.py} (you are welcome to build upon this implementation, but make CERTAIN you understand it, since you'll need to change several lines of it).  You are also welcome to build upon your implementation from the previous assignment, but you must follow the API below.  Note that all matrices are actually 2D numpy arrays in the implementation.\\
-    
-    \begin{itemize}[noitemsep, nolistsep]
-        \item \texttt{\_\_init\_\_(degree=1, regLambda=1E-8)} : constructor with arguments of $d$ and $\lambda$
-        \item \texttt{fit(X,Y)}: method to train the polynomial regression model
-        \item \texttt{predict(X)}: method to use the trained polynomial regression model for prediction
-        \item \texttt{polyfeatures(X, degree)}: expands the given $n \times 1$ matrix $X$ into an $n \times d$ matrix of polynomial features of degree $d$.  Note that the returned matrix will not include the zero-th power.\\
-    \end{itemize}
-    
-    Note that the \texttt{polyfeatures(X, degree)} function maps the original univariate data into its higher order powers.  Specifically, $X$ will be an $n \times 1$ matrix $(X \in \mathbb{R}^{n \times 1})$ and this function will return the polynomial expansion of this data, a $n \times d$ matrix.  Note that this function will {\bf not} add in the zero-th order feature (i.e., $x_0 = 1$).  You should add the $x_0$ feature separately, outside of this function, before training the model.
+Calculate $\hat{\lambda}$:
+\[
+    \hat{\lambda} = \bar{x} = \frac{2+4+6+0+1}{5} = \frac{13}{5} = 2.60
+\]
 
-    \begin{wrapfigure}{R}{0.42\textwidth}
-        \centering
-        \vspace{-1em}
-        \includegraphics[width=0.4\textwidth, alt={Scatter plot showing that as polynomial degree increases to 8, the function oscillates wildly between data points, indicating high variance.}]{../img/polyregDegree8.png}
-        \vspace{-1em}
-        \caption{Fit of polynomial regression with $\lambda = 0$ and $d = 8$}\label{fig:polyregUnivariate}
-        \vspace{-2em}
-    \end{wrapfigure}
+Probability of scoring exactly 6 goals next game $\Rightarrow P(X=6|\lambda=2.6)$:
+\[
+    P(X=6|\lambda=2.6) = e^{-2.6} \frac{2.6^6}{6!}
+\]
+\[
+    \boxed{P(X=6|\lambda=2.6) \approx 0.03187}
+\]
 
-    By not including the $x_0$ column in the matrix \texttt{polyfeatures()}, this allows the \texttt{polyfeatures} function to be more general, so it could be applied to multi-variate data as well. (If it did add the $x_0$ feature, we'd end up with multiple columns of 1's for multivariate data.)\\
-    
-    Also, notice that the resulting features will be badly scaled if we use them in raw form.  For example, with a polynomial of degree $d = 8$ and $x = 20$, the basis expansion yields $x^1 = 20$ while $x^8 = 2.56 \times 10^{10}$ -- an
-    absolutely huge difference in range.  Consequently, we will need to standardize the data before solving linear regression.  Standardize the data in \texttt{fit()} after you perform the polynomial feature expansion.  You'll need to apply the same standardization transformation in \texttt{predict()} before you apply it to new data.\\
-    
-    Run \texttt{plot\_polyreg\_univariate.py} to test your implementation, which will plot the learned function.  In this case, the script fits a polynomial of degree $d=8$ with no regularization $\lambda = 0$.  From the plot, we see that the function fits the data well, but will not generalize well to new data points.  Try increasing the amount of regularization, and in 1-2 sentences, describe the resulting effect on the function (you may also provide an additional plot to support your analysis).
-    
-    \subsubsection*{What to Submit:}
-    \begin{itemize}
-        \item 1-2 sentence description of the effect of increasing regularization.
-        \item Plots before and after increase in regularization.
-        \item \textbf{Code} on Gradescope through coding submission
-    \end{itemize}
-\end{aprob}
+\bigskip
+\begin{mdframed}
+\textbf{\large Part c:} Numerical estimate of $P(6 \text{ goals})$ after 6 games score
+\end{mdframed}
 
-\begin{aprob}
-    \points{10} In this problem we will examine the bias-variance tradeoff through learning curves. Learning curves provide a valuable mechanism for evaluating the bias-variance tradeoff. Implement the \texttt{learningCurve()} function in \texttt{polyreg.py} to compute the learning curves for a given training/test set.  The \texttt{learningCurve(Xtrain, ytrain, Xtest, ytest, degree, regLambda)} function should take in the training data (\texttt{Xtrain}, \texttt{ytrain}), the testing data (\texttt{Xtest}, \texttt{ytest}), and values for the polynomial degree $d$ and regularization parameter $\lambda$. The function should return two arrays, \texttt{errorTrain} (the array of training errors) and \texttt{errorTest} (the array of testing errors).  The $i^{th}$ index (start from 0) of each array should return the training error (or testing error) for learning with $i +1$ training instances.  Note that the 0$^{th}$ index actually won't matter, since we typically start displaying the learning curves with two or more instances.\\
-    
-    When computing the learning curves, you should learn on \texttt{Xtrain}[0:$i$] for $i = 1, \ldots, \text{numInstances}(\texttt{Xtrain})$, each time computing the testing error over the {\bf entire} test set.  There is no need to shuffle the training data, or to average the error over multiple trials -- just produce the learning curves for the given training/testing sets with the instances in their given order.  Recall that the error for regression problems is given by
-    \begin{equation}
-        \frac{1}{n} \sum_{i=1}^n (h_{\bm{\theta}}(\mathbf{x}_i) - y_i)^2 \enspace.
-    \end{equation}
-    
-    Once the function is written to compute the learning curves, run the \texttt{plot\_polyreg\_learningCurve.py} script to plot the learning curves for various values of $\lambda$ and $d$.  You should see plots similar to the following:
-    \begin{figure}[ht!]
-        \centering
-        \vspace{-1em}
-        \includegraphics[width=\textwidth, alt={A grid of six learning curve plots showing Training and Testing Error on a log scale. The plots demonstrate the bias-variance tradeoff: low-degree models show high error for both (bias), high-degree models without regularization show a massive gap between low training and high testing error (variance), and the middle plots show the errors converging to a low value as regularization is optimized.}]{../img/polyregLearningCurves.png}
-        \vspace{-1em}
-    \end{figure}
-    
-    Notice the following:
-    \begin{itemize}
-        \item The y-axis is using a log-scale and the ranges of the y-scale are all different for the plots.  The dashed black line indicates the $y=1$ line as a point of reference between the plots.
-        \item The plot of the unregularized model with $d = 1$ shows poor training error, indicating a high bias (i.e., it is a standard univariate linear regression fit).
-        \item The plot of the (almost) unregularized model ($\lambda = 10^{-6}$) with $d = 8$ shows that the training error is low, but that the testing error is high.  There is a huge gap between the training and testing errors caused by the model overfitting the training data, indicating a high variance problem.
-        \item As the regularization parameter increases (e.g., $\lambda = 1$) with $d = 8$, we see that the gap between the training and testing error narrows, with both the training and testing errors converging to a low value.  We can see that the model fits the data well and generalizes well, and therefore does not have either a high bias or a high variance problem.  Effectively, it has a good tradeoff between bias and variance.
-        \item Once the regularization parameter is too high ($\lambda = 100$), we see that the training and testing errors are once again high, indicating a poor fit.  Effectively, there is too much regularization, resulting in high bias.
-    \end{itemize}
-    
-    Submit plots for the same values of $d$ and $\lambda$ shown here. Make absolutely certain that you understand these observations, and how they relate to the learning curve plots.  In practice, we can choose the value for $\lambda$ via cross-validation to achieve the best bias-variance tradeoff.
-    
-    \subsubsection*{What to Submit:}
-    \begin{itemize}
-        \item \textbf{Plots} (or single plot with many subplots) of learning curves for \\$(d, \lambda) \in \{(1, 0), (4,10^{-6}), (8, 10^{-6}), (8, 0.1), (8, 1), (8, 100)\}$.
-        \item \textbf{Code} on Gradescope through coding submission
-    \end{itemize}
-\end{aprob}
+Calculate $\hat{\lambda}$:
+\[
+    \hat{\lambda} = \bar{x} = \frac{2+4+6+0+1+8}{6} = \frac{21}{6} = 3.50
+\]
 
-\section*{Ridge Regression on MNIST}
-\begin{aprob}
-    In this problem we will implement a regularized least squares classifier for the MNIST data set. The task
-    is to classify handwritten images of numbers between $0$ to $9$.\\
-    
-    You are \textbf{NOT} allowed to use any of the pre-built  classifiers in \verb|sklearn|.  Feel free to use any method from \verb|numpy| or \verb|scipy|. {\bf Remember:} if you are inverting a matrix in your code, you are probably doing something wrong (Hint: look at \verb|scipy.linalg.solve|).\\
+Probability of scoring exactly 6 goals next game $\Rightarrow P(X=6|\lambda=3.5)$:
+\[
+    P(X=6|\lambda=3.5) = e^{-3.5} \frac{3.5^6}{6!}
+\]
+\[
+    \boxed{P(X=6|\lambda=2.6) \approx 0.06976}
+\]
 
-    Each example has features $x_i \in \R^d$ (with $d=28*28=784$) and label $z_j \in \{0,\dots,9\}$. You can visualize a single example $x_i$ with \texttt{imshow} after reshaping it to its original $28 \times 28$ image shape (and noting that the label $z_j$ is accurate). We wish to learn a predictor $\widehat{f}$ that takes as input a vector in $\R^d$ and outputs an index in $\{0,\dots,9\}$. We define our training and testing classification error on a predictor $f$ as
-    \begin{align*}
-        \widehat{\epsilon}_{\textrm{train}}(f) &=
-        \frac{1}{N _{\textrm{train}}} \sum_{(x,z)\in \textrm{Training Set}}     \1\{ f(x) \neq z \}
-        \\
-          \widehat{\epsilon}_{\textrm{test}}(f) &=
-          \frac{1}{N _{\textrm{test}}} \sum_{(x,z)\in \textrm{Test Set}}     \1\{ f(x) \neq z \} 
-    \end{align*}
-    
-    We will use one-hot encoding of the labels: for each observation $(x,z)$, the original label $z \in \{0, \ldots, 9\}$ is mapped to the standard basis vector $e_{z+1}$ where $e_i$ is a vector of size $k$ containing all zeros except for a $1$ in the $i^{\textrm{th}}$ position (positions in these vectors are indexed starting at one, hence the $z+1$ offset for the digit labels). We adopt the notation where we have $n$ data points in our training objective with features $x_i \in \R^d$ and label one-hot encoded as $y_i \in \{0,1\}^k$. Here, $k=10$ since there are 10 digits.
-    
-    \begin{enumerate}
-        \item \points{10} In this problem we will choose a linear classifier to minimize the regularized least squares objective:
-        \begin{align*}
-            \widehat{W} = \text{argmin}_{W \in \R^{d \times k}} \sum_{i=1}^{n} \| W^Tx_{i} - y_{i} \|^{2}_{2} + \lambda \|W\|_{F}^{2}
-        \end{align*}
-        Note that $\|W\|_{F}$ corresponds to the Frobenius norm of $W$, i.e. $\|W\|_{F}^{2} = \sum_{i=1}^d \sum_{j=1}^k W_{i,j}^2$. To classify a point $x_i$ we will use the rule $\arg\max_{j=0,\dots,9} e_{j+1}^T \widehat{W}^T x_i$. Note that if $W = \begin{bmatrix} w_1 & \dots & w_k \end{bmatrix}$ then
-        \begin{align*}
-            \sum_{i=1}^{n} \| W^Tx_{i} - y_{i} \|^{2}_{2} + \lambda \|W\|_{F}^{2} &= \sum_{j=1}^k \left[  \sum_{i=1}^n ( e_j^T W^T x_i - e_j^T y_i)^2 + \lambda \| W e_j \|_2^2 \right] \\
-            &= \sum_{j=1}^k \left[  \sum_{i=1}^n ( w_j^T x_i - e_j^T y_i)^2 + \lambda \| w_j \|_2^2 \right] \\
-            &= \sum_{j=1}^k \left[  \| X w_j - Y e_j\|_2^2 + \lambda \| w_j \|_2^2 \right]
-        \end{align*}
-        where $X = \begin{bmatrix} x_1 & \dots & x_n \end{bmatrix}^\top \in \R^{n \times d}$ and $Y = \begin{bmatrix} y_1 & \dots & y_n \end{bmatrix}^\top \in \R^{n \times k}$. Show that
-        \begin{align*}
-            \widehat{W} = (X^T X + \lambda I)^{-1} X^T Y
-        \end{align*} 
+\noindent\rule{\textwidth}{0.4pt}
 
-        \item \points{10} 
-        \begin{itemize}
-            \item Implement a function \verb|train| that takes as input $X \in\R^{n \times d}$, $Y \in \{0,1\}^{n \times k}$, $\lambda > 0$ and returns $\widehat{W} \in \R^{d \times k}$.
-            \item Implement a function \verb|one_hot| that takes as input $Y \in \{0, ..., k-1\}^{n}$, and returns $Y \in \{0,1\}^{n \times k}$.
-            \item Implement a function  \verb|predict| that takes as input $W \in \R^{d \times k}$, $X' \in\R^{m \times d}$ and returns an $m$-length vector with the $i$th entry equal to $\arg\max_{j=0,\dots,9} e_j^T W^T x_i'$ where $x_i' \in \R^d$ is a column vector representing the $i$th example from $X'$.
-            \item Using the functions you coded above, train a model to estimate $\widehat{W}$ on the MNIST training data with $\lambda = 10^{-4}$, and make label predictions on the test data. This behavior is implemented in \verb|main| function provided in zip file. {\bf What is the training and testing error?} Note that they should both be about $15\%$. 
-        \end{itemize}
-    \end{enumerate}
-    
-    \subsubsection*{What to Submit:}
-    \begin{itemize}
-        \item \textbf{Part A:} Derivation of expression for $\widehat{W}$
-        \item \textbf{Part B:} Values of training and testing errors
-        \item \textbf{Code} on Gradescope through coding submission
-    \end{itemize}
-\end{aprob}
+\clearpage{}
+\section*{A3 --- Polynomial Regression}
+
+\subsubsection*{Solution:}
+
+\textbf{Observation of increasing regularization:} With $\lambda = 0$ and $d = 8$, the model overfits --- the curve threads through the training points, capturing irreducible noise rather than generalizing underlying pattern. Increasing $\lambda$ progressively constrains coefficient magnitudes, smoothing the curve and improving generalization up to a point ($\lambda \approx 0.1$), beyond which the model becomes too constrained and underfits --- losing the ability to capture the true relationship in the data.
+
+\bigskip
+\textbf{Plots} (all with $d = 8$):
+
+\medskip
+$\lambda = 0$ --- no regularization. The curve overfits, threading through training points and capturing noise.
+\begin{center}
+    \includegraphics[width=4.5in]{./before_reg_d8_lambda0.png}
+\end{center}
+
+\medskip
+$\lambda = 0.1$ --- the curve is smoother and appears to generalize well, maintaining close fit to the data points with minimal squared error.
+\begin{center}
+    \includegraphics[width=4.5in]{./after_reg_d8_lambda0.1.png}
+\end{center}
+
+\medskip
+$\lambda = 0.5$ --- the curve begins to underfit; data points near the origin start falling outside the fitted pattern.
+\begin{center}
+    \includegraphics[width=4.5in]{./after_reg_d8_lambda0.5.png}
+\end{center}
+
+\medskip
+$\lambda = 1.0$ --- the lower half of the curve becomes nearly linear, missing the structure of data points near the origin.
+\begin{center}
+    \includegraphics[width=4.5in]{./after_reg_d8_lambda1.png}
+\end{center}
+
+\medskip
+$\lambda = 5.0$ --- the curve is largely flattened, only fitting the central tendency of the data and missing most of the underlying pattern.
+\begin{center}
+    \includegraphics[width=4.5in]{./after_reg_d8_lambda5.png}
+\end{center}
+
+\noindent\rule{\textwidth}{0.4pt}
+
+\clearpage{}
+\section*{A4 --- Polynomial Regression: Learning Curves}
+
+\subsubsection*{Solution:}
+
+\textbf{Observations from Required plots} for $(d, \lambda) \in \{(1,0), (4,10^{-6}), (8,10^{-6}), (8,0.1), (8,1), (8,100)\}$
+
+\begin{center}
+    \includegraphics[width=\textwidth]{./learning_curves.png}
+\end{center}
+
+Increasing $d$ from 1$\rightarrow$4$\rightarrow$8 with minimal regularization shows bias decreasing (training error drops) but variance increasing (train-test gap widens dramatically). At d=8, $\lambda$=1e-6, test error reaches $10^6$ --- severe overfitting.
+
+Increasing $\lambda$ from 1e-6$\rightarrow$0.1$\rightarrow$1$\rightarrow$100 at fixed d=8 shows the reverse: the train-test gap narrows (variance decreasing) while both errors gradually rise (bias increasing). At $\lambda$=1, training and test error converge near the dashed line --- the best tradeoff. At $\lambda$=100, both errors are high --- effectively underfitting, similar to d=1.
+
+\bigskip
+\textbf{Observations from Additional exploratory plots} for $(d, \lambda) \in \{(2,10^{-6}), (4,0.1), (6,0.1), (8,0.01), (8,0.5), (8,10)\}$
+
+\begin{center}
+    \includegraphics[width=\textwidth]{./exploratory_plots.png}
+\end{center}
+
+Multiple $(d, \lambda)$ combinations achieve similar performance --- $(d=4, \lambda=0.1)$, $(d=6, \lambda=0.1)$, and $(d=8, \lambda=0.5)$ all show tight convergence of training and test error. This confirms there is no single ``correct'' model --- rather a family of solutions that balance bias and variance differently.
+
+The sweet spot for d=8 lies around $\lambda \in [0.5, 1]$, with $\lambda$=0.01 still overfitting and $\lambda$=10 already underfitting.
+
+\noindent\rule{\textwidth}{0.4pt}
+
+\clearpage{}
+\section*{A5 --- Ridge Regression on MNIST}
+
+\textbf{Known:}
+\begin{itemize}
+    \item MNIST dataset: 28$\times$28 grayscale images of digits 0-9, flattened to $x_i \in \R^d$ where $d = 784$
+    \item Labels $z_j \in \{0, \ldots, 9\}$, one-hot encoded as $y_i \in \{0,1\}^k$ where $k = 10$
+    \item One-hot encoding: label $z$ maps to $e_{z+1}$ (standard basis vector with 1 at position $z+1$)
+    \item Weight matrix $W \in \R^{d \times k}$, with columns $W = [w_1 \ldots w_k]$
+    \item Frobenius norm: $\|W\|_F^2 = \sum_{i=1}^{d} \sum_{j=1}^{k} W_{i,j}^2$
+    \item $X = [x_1 \ldots x_n]^\top \in \R^{n \times d}$ (data matrix, each row is one image)
+    \item $Y = [y_1 \ldots y_n]^\top \in \R^{n \times k}$ (label matrix, each row is one-hot vector)
+\end{itemize}
+
+\subsubsection*{Solution:}
+
+\begin{mdframed}
+\textbf{\large Part a:} Derive the closed-form expression for $\hat{W}$
+\end{mdframed}
+
+Objective: minimize the regularized least squares
+\[
+    \hat{W} = \text{argmin}_{W \in \R^{d \times k}} \sum_{i=1}^{n} \|W^T x_i - y_i\|_2^2 + \lambda\|W\|_F^2
+\]
+
+\medskip
+\textbf{Step 1: Decompose the Frobenius norm by columns}
+
+Since $W = [w_1 \ldots w_k]$, the Frobenius norm decomposes as:
+\[
+    \|W\|_F^2 = \sum_{j=1}^{k} \|w_j\|_2^2
+\]
+each column's squared norm contributes independently to the total penalty.
+
+\medskip
+\textbf{Step 2: Decompose the data error term by columns}
+
+$W^T x_i$ is a $k$-dimensional vector. Its $j$-th entry is $e_j^T W^T x_i = w_j^T x_i$
+
+$y_i$'s $j$-th entry is $e_j^T y_i$
+
+So the squared error for one data point decomposes:
+\[
+    \|W^T x_i - y_i\|_2^2 = \sum_{j=1}^{k} (w_j^T x_i - e_j^T y_i)^2
+\]
+
+\medskip
+\textbf{Step 3: Combine and rearrange the full objective}
+
+Substituting the decompositions into the objective:
+\[
+    \sum_{i=1}^{n} \|W^T x_i - y_i\|_2^2 + \lambda\|W\|_F^2 = \sum_{j=1}^{k} \left[ \sum_{i=1}^{n} (w_j^T x_i - e_j^T y_i)^2 + \lambda\|w_j\|_2^2 \right]
+\]
+
+The inner sum over $i$ can be written in matrix form. Since $w_j^T x_i$ is the $i$-th entry of $Xw_j$, and $e_j^T y_i$ is the $i$-th entry of $Ye_j$ (the $j$-th column of $Y$):
+\[
+    = \sum_{j=1}^{k} \left[ \|Xw_j - Ye_j\|_2^2 + \lambda\|w_j\|_2^2 \right]
+\]
+
+\medskip
+\textbf{Step 4: Each column is an independent ridge regression}
+
+The objective is a sum over $j = 1, \ldots, k$ where each term only involves $w_j$. Minimizing the total = minimizing each term independently.
+
+For each $j$, the problem is:
+\[
+    \hat{w}_j = \text{argmin}_{w_j} \|Xw_j - Ye_j\|_2^2 + \lambda\|w_j\|_2^2
+\]
+This is standard ridge regression with target vector $Ye_j$ (the $j$-th column of $Y$).
+
+\medskip
+\textbf{Step 5: Solve each ridge regression}
+
+Expand the objective for column $j$:
+\[
+    \|Xw_j - Ye_j\|_2^2 + \lambda\|w_j\|_2^2 = (Xw_j - Ye_j)^T(Xw_j - Ye_j) + \lambda w_j^T w_j
+\]
+\[
+    = w_j^T X^T X w_j - 2w_j^T X^T Y e_j + e_j^T Y^T Y e_j + \lambda w_j^T w_j
+\]
+
+Differentiate with respect to $w_j$ and set to zero:
+\[
+    \frac{\partial}{\partial w_j} = 2X^T X w_j - 2X^T Y e_j + 2\lambda w_j = 0
+\]
+\[
+    (X^T X + \lambda I) w_j = X^T Y e_j
+\]
+\[
+    \hat{w}_j = (X^T X + \lambda I)^{-1} X^T Y e_j
+\]
+
+\medskip
+\textbf{Step 6: Stack all columns back into W}
+
+Since $\hat{w}_j = (X^T X + \lambda I)^{-1} X^T Y e_j$ for each $j = 1, \ldots, k$
+
+And $[Ye_1 \; Ye_2 \; \ldots \; Ye_k] = Y$ (selecting each column of $Y$ reconstructs $Y$)
+
+Stacking all columns: $\hat{W} = [\hat{w}_1 \ldots \hat{w}_k] = (X^T X + \lambda I)^{-1} X^T [Ye_1 \ldots Ye_k]$
+\[
+    \boxed{\hat{W} = (X^T X + \lambda I)^{-1} X^T Y}
+\]
+
+\textbf{Result:}
+\[
+    \hat{W} = (X^T X + \lambda I)^{-1} X^T Y
+\]
+
+The multi-class ridge regression decomposes into $k$ independent single-output regression per class. Each shares the $(X^T X + \lambda I)^{-1} X^T$ factor --- only target column of $Y$ differs.
+
+\bigskip
+\begin{mdframed}
+\textbf{\large Part b:} Implementation
+\end{mdframed}
+
+\textbf{Results} with $\lambda = 10^{-4}$:
+\begin{itemize}
+    \item Training error: $\boxed{14.805\%}$
+    \item Testing error: $\boxed{14.66\%}$
+\end{itemize}
+
+\medskip
+\textbf{\texttt{one\_hot(y, num\_classes)}} --- converts integer label vector to binary matrix
+\begin{itemize}
+    \item Input: $y \in \{0, \ldots, k-1\}^n$ (integer labels), $k$ = number of classes
+    \item Output: $Y \in \{0,1\}^{n \times k}$ where each row has a single 1 at the column matching the label
+    \item Example: $y = [2, 3, 1, 0]$ with $k=4$ produces rows $[0,0,1,0], [0,0,0,1], [0,1,0,0], [1,0,0,0]$
+    \item Use NumPy fancy indexing: create an $n \times k$ zeros matrix, then set \texttt{result[i, y[i]] = 1} for all $i$ simultaneously
+\end{itemize}
+
+\medskip
+\textbf{\texttt{train(X, Y, $\lambda$)}} --- computes $\hat{W} = (X^T X + \lambda I)^{-1} X^T Y$
+\begin{itemize}
+    \item Compute $A = X^T X + \lambda I$ where $I$ is the $d \times d$ identity matrix
+    \item Compute $B = X^T Y$
+    \item Solve $AW = B$ for $W$ using \texttt{np.linalg.solve(A, B)} --- do NOT explicitly compute $A^{-1}$
+    \item Why \texttt{solve} instead of inverse: solving the linear system directly is faster and more numerically stable. The problem hint states ``if you are inverting a matrix, you are probably doing something wrong.''
+\end{itemize}
+
+\medskip
+\textbf{\texttt{predict(X, W)}} --- classifies new inputs
+\begin{itemize}
+    \item Compute scores: $S = XW$ where $S \in \R^{n \times k}$ --- each row is a score vector over $k$ classes
+    \item For each row, pick the class with the highest score: $\hat{z}_i = \text{argmax}_j \; S_{i,j}$
+    \item Returns integer predictions $\in \{0, \ldots, 9\}$
+\end{itemize}
 
 \end{document}
-
-%%% Local Variables:
-%%% mode: latex
-%%% TeX-master: t
-%%% End:
