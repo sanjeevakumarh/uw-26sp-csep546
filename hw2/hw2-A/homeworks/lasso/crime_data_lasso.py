@@ -29,6 +29,7 @@ def main():
         lam /= 2
         
     nonzeros_list = []
+    weights_path = []
     w_prev, b_prev = None, None
 
     for lam in lambdas:
@@ -38,6 +39,9 @@ def main():
         w_prev = np.copy(w_hat)
         b_prev = b_hat
         nonzeros_list.append(np.sum(w_hat != 0))
+        weights_path.append(np.copy(w_hat))
+
+    weights_path = np.array(weights_path)
         
     plt.figure()
     plt.plot(lambdas, nonzeros_list, 'o-')
@@ -48,6 +52,22 @@ def main():
     plt.gca().invert_xaxis()
     plt.tight_layout()
     plt.savefig('plot3_crime_nonzeros.png', dpi=150)
+    plt.show()
+    
+    # --- Plot d: regularization paths for 5 features ---
+    track_features = ['agePct12t29', 'pctWSocSec', 'pctUrban', 'agePct65up', 'householdsize']
+    plt.figure()
+    for feat in track_features:
+        idx = feature_names.index(feat)
+        plt.plot(lambdas, weights_path[:, idx], 'o-', label=feat, markersize=3)
+    plt.xscale('log')
+    plt.xlabel(r'$\lambda$')
+    plt.ylabel('Coefficient Value')
+    plt.title(r'Crime Data: Regularization Paths for Selected Features')
+    plt.legend()
+    plt.gca().invert_xaxis()
+    plt.tight_layout()
+    plt.savefig('plot4_crime_reg_paths.png', dpi=150)
     plt.show()
 
 if __name__ == "__main__":

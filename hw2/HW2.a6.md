@@ -11,4 +11,5 @@ title:: HW2.a6
 	- 3. **Percent of vacant/boarded housing**: Crime drives residents out and depresses investment, leading to vacant properties — the vacancy is an effect of crime, not a driver.
 - A6.c
 	- A6.c.png
-- 
+- A6.d
+	- A6.d.png
