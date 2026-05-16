@@ -25,7 +25,13 @@ def step(
         Tuple[np.ndarray, float]: Tuple with 2 entries. First represents updated weight vector, second represents bias.
     
     """
-    raise NotImplementedError("Your Code Goes Here")
+    residual = X @ weight + bias - y
+    #  derivative of the squared error (xiT​w+b−yi​)^2. The derivative of z^2 is 2z => 2 * eta
+    bias_new = bias - 2 * eta * np.sum(residual)
+    w_grad = weight - 2 * eta * (X.T @ residual)
+    threshold = 2 * eta * _lambda
+    weight_new = np.sign(w_grad) * np.maximum(np.abs(w_grad) - threshold, 0)
+    return weight_new, bias_new
 
 
 @problem.tag("hw2-A")
@@ -44,7 +50,8 @@ def loss(
     Returns:
         float: value of the loss function
     """
-    raise NotImplementedError("Your Code Goes Here")
+    residual = X @ weight + bias - y
+    return np.sum(residual ** 2) + _lambda * np.sum(np.abs(weight))
 
 
 @problem.tag("hw2-A", start_line=5)
@@ -95,7 +102,16 @@ def train(
         start_bias = 0
     old_w: Optional[np.ndarray] = None
     old_b: float = None
-    raise NotImplementedError("Your Code Goes Here")
+    w = np.copy(start_weight)
+    b = float(start_bias) if start_bias is not None else 0.0
+
+    while True:
+        old_w = np.copy(w)
+        old_b = b
+        w, b = step(X, y, w, b, _lambda, eta)
+        if convergence_criterion(w, old_w, b, old_b, convergence_delta):
+            break
+    return w, b
 
 
 @problem.tag("hw2-A")
@@ -116,7 +132,8 @@ def convergence_criterion(
     Returns:
         bool: False, if weight and bias has not converged yet. True otherwise.
     """
-    raise NotImplementedError("Your Code Goes Here")
+    max_change = max(np.max(np.abs(weight - old_w)), abs(bias - old_b))
+    return max_change < convergence_delta
 
 
 @problem.tag("hw2-A")
@@ -124,7 +141,81 @@ def main():
     """
     Use all of the functions above to make plots.
     """
-    raise NotImplementedError("Your Code Goes Here")
+    # rondom seed - 777
+    np.random.seed(777)
+    # n (samples) = 500, d (features) = 1000, k (relevant features) = 100, sigma (noise) = 1.0
+    n, d, k, sigma = 500, 1000, 100, 1.0
+
+    # True weights: w_j = j/k for j=1..k, else 0
+    w_true = np.zeros(d)
+    for j in range(k):
+        w_true[j] = (j + 1) / k
+
+    # Generate X, standardize, generate y
+    X = np.random.randn(n, d)
+    # avoid division by zero in case of zero std => 1e-9
+    X = (X - X.mean(axis=0)) / (X.std(axis=0) + 1e-9)
+    epsilon = sigma * np.random.randn(n)
+    y = X @ w_true + epsilon
+
+    # lambda_max: smallest lambda where all weights are zero
+    y_bar = np.mean(y)
+    lambda_max = np.max(2 * np.abs(X.T @ (y - y_bar)))
+
+    # Build regularization : lambda_max, lambda_max/2, lambda_max/4, ...
+    lambdas = []
+    lam = lambda_max
+    while lam >= 0.01:
+        lambdas.append(lam)
+        lam /= 2
+
+    # Track metrics
+    nonzeros_list = []
+    fdr_list = []
+    tpr_list = []
+    w_prev, b_prev = None, None
+
+    for lam in lambdas:
+        w_hat, b_hat = train(X, y, _lambda=lam, eta=0.00001,
+                            convergence_delta=1e-4,
+                            start_weight=w_prev, start_bias=b_prev)
+        w_prev = np.copy(w_hat)
+        b_prev = b_hat
+
+        nz_mask = w_hat != 0
+        total_nz = np.sum(nz_mask)
+        nonzeros_list.append(total_nz)
+
+        correct_nz = np.sum(nz_mask & (w_true != 0))
+        incorrect_nz = np.sum(nz_mask & (w_true == 0))
+        fdr = incorrect_nz / total_nz if total_nz > 0 else 0.0
+        tpr = correct_nz / k
+
+        fdr_list.append(fdr)
+        tpr_list.append(tpr)
+        print(f"lambda={lam:.4f}, nonzeros={total_nz}, FDR={fdr:.3f}, TPR={tpr:.3f}")
+
+    # Plot 1: nonzeros vs lambda
+    plt.figure()
+    plt.plot(lambdas, nonzeros_list, 'o-')
+    plt.xscale('log')
+    plt.xlabel('lambda')
+    plt.ylabel('Number of nonzeros')
+    plt.title('Lasso Sparsity: Nonzero Weights vs Regularization Strength λ')
+    plt.gca().invert_xaxis()
+    plt.tight_layout()
+    plt.savefig('plot1_nonzeros_vs_lambda.png', dpi=144)
+    plt.show()
+
+    # Plot 2: FDR vs TPR
+    plt.figure()
+    plt.plot(fdr_list, tpr_list, 'o-')
+    plt.xlabel('FDR')
+    plt.ylabel('TPR')
+    plt.title('Lasso Feature Selection: FDR vs TPR Across Regularization Path')
+    plt.tight_layout()
+    plt.savefig('plot2_fdr_vs_tpr.png', dpi=144)
+    plt.show()
 
 
 if __name__ == "__main__":

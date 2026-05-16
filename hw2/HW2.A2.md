@@ -1,0 +1,26 @@
+title:: HW2.A2
+
+- A2 : A *norm* $\|\cdot\|$ over $\mathbb{R}^n$ satisfies: (i) non-negativity: $\|x\| \geq 0$ with equality iff $x = 0$, (ii) absolute scalability: $\|ax\| = |a|\|x\|$, (iii) triangle inequality: $\|x + y\| \leq \|x\| + \|y\|$.
+- A2.a
+	- Show that $f(x) = \sum_{i=1}^{n} |x_i|$ is a norm.
+	- **(i) Non-negativity**
+		- By definition Each $|x_i| \geq 0$
+		- therefore sum of all elements $f(x) = \sum_i |x_i| \geq 0$.
+		- If $f(x) = 0$, then every $|x_i| = 0$
+	- **(ii) Absolute scalability**
+		- $$f(ax) = \sum_{i=1}^{n} |ax_i|$$
+		- $$= \sum_{i=1}^{n} |a||x_i|$$
+		- $$= |a| \sum_{i=1}^{n} |x_i| = |a| f(x)  $$
+	- **(iii) Triangle inequality**
+		- for any $a, b \in \mathbb{R}$, $|a + b| \leq |a| + |b|$ (the scalar triangle inequality)
+		- $$f(x + y) = \sum_{i=1}^{n} |x_i + y_i| $$
+		- $$ = \sum_{i=1}^{n} |x_i| + \sum_{i=1}^{n} |y_i| = f(x) + f(y)$$
+	- Since all three properties hold, $f(x) = \sum_i |x_i|$ is a norm.
+- A2.b
+	- Show that $f(x) = \left(\sum_{i=1}^{n} |x_i|^{1/2}\right)^2$ is not a norm.
+	- **counterexample** to the triangle inequality in $n = 2$. Let $x = (1, 0)$ and $y = (0, 1)$.
+		- $f(x) = (|1|^{1/2} + |0|^{1/2})^2 = (1)^2 = 1$
+		- $f(y) = (|0|^{1/2} + |1|^{1/2})^2 = (1)^2 = 1$
+		- $f(x + y) = f((1,1)) = (|1|^{1/2} + |1|^{1/2})^2 = (1 + 1)^2 = 4$
+	- The triangle inequality requires $f(x + y) \leq f(x) + f(y)$, but $4 \leq 1 + 1 = 2$ is false. Therefore $f$ is not a norm.
+	-
