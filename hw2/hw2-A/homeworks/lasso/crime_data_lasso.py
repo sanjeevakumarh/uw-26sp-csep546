@@ -18,6 +18,9 @@ def main():
     y_train = df_train["ViolentCrimesPerPop"].values
     X_train = df_train.drop("ViolentCrimesPerPop", axis=1).values
     feature_names = df_train.drop("ViolentCrimesPerPop", axis=1).columns.tolist()
+    
+    y_test = df_test["ViolentCrimesPerPop"].values
+    X_test = df_test.drop("ViolentCrimesPerPop", axis=1).values
 
     y_bar = np.mean(y_train)
     lambda_max = np.max(2 * np.abs(X_train.T @ (y_train - y_bar)))
@@ -30,6 +33,8 @@ def main():
         
     nonzeros_list = []
     weights_path = []
+    train_errors = []
+    test_errors = []
     w_prev, b_prev = None, None
 
     for lam in lambdas:
@@ -40,6 +45,8 @@ def main():
         b_prev = b_hat
         nonzeros_list.append(np.sum(w_hat != 0))
         weights_path.append(np.copy(w_hat))
+        train_errors.append(np.sum((X_train @ w_hat + b_hat - y_train) ** 2))
+        test_errors.append(np.sum((X_test @ w_hat + b_hat - y_test) ** 2))
 
     weights_path = np.array(weights_path)
         
@@ -68,6 +75,20 @@ def main():
     plt.gca().invert_xaxis()
     plt.tight_layout()
     plt.savefig('plot4_crime_reg_paths.png', dpi=150)
+    plt.show()
+    
+    # --- Plot e: train/test squared error vs lambda ---
+    plt.figure()
+    plt.plot(lambdas, train_errors, 'o-', label='Train', markersize=3)
+    plt.plot(lambdas, test_errors, 'o-', label='Test', markersize=3)
+    plt.xscale('log')
+    plt.xlabel(r'$\lambda$')
+    plt.ylabel('Squared Error')
+    plt.title(r'Crime Data: Train/Test Squared Error vs $\lambda$')
+    plt.legend()
+    plt.gca().invert_xaxis()
+    plt.tight_layout()
+    plt.savefig('plot5_crime_error.png', dpi=150)
     plt.show()
 
 if __name__ == "__main__":
