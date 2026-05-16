@@ -13,3 +13,9 @@ title:: HW2.a6
 	- A6.c.png
 - A6.d
 	- A6.d.png
+- A6.e
+	- A6.e.png
+- A6.f
+	- Most positive: PctIlleg (percent of kids born to unmarried parents) = 0.0630. Most negative: PctKids2Par (percent of kids in two-parent households) = −0.0403. These two features are strongly correlated (more single-parent households ↔ fewer two-parent households), so it’s unsurprising they appear as the strongest pair. Both reflect family structure, which is itself shaped by socioeconomic conditions and policy — a nonzero weight here indicates association with crime rates, not causation.
+- A6.g
+	- This confuses correlation with causation. A negative weight on agePct65up means the feature is associated with lower crime rates, not that it causes lower crime. Communities with more elderly residents likely differ in many other ways (e.g., more suburban, wealthier, more stable housing). Moving elderly people to high-crime areas would not change the underlying socioeconomic factors that drive crime — just as sending more fire trucks to a neighborhood does not cause more fires.
